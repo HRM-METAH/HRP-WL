@@ -1,0 +1,77 @@
+========================================
+?? DO THIS ONE THING - FINAL TEST
+========================================
+
+I've opened: simple-test.html
+
+This is a SUPER SIMPLE test with BIG buttons.
+
+========================================
+? WHAT TO DO:
+========================================
+
+1. Look at the simple-test.html window
+2. You'll see:
+   - Email field (pre-filled)
+   - Password field (pre-filled)
+   - TWO BIG BUTTONS: "SIGN IN" and "SIGN UP"
+
+3. Click the GREEN "SIGN UP" button
+
+4. Look at what appears below the buttons
+
+========================================
+?? YOU WILL SEE ONE OF TWO THINGS:
+========================================
+
+OPTION A: ? SUCCESS
+--------------------
+"? SUCCESS! Account created for: test@example.com"
+
+? Firebase IS enabled and working!
+? Your main app SHOULD work too
+? The problem is something else in index.html
+? Tell me: "SIMPLE TEST WORKS"
+
+OPTION B: ? ERROR
+------------------
+"? ERROR: auth/operation-not-allowed"
+"?? EMAIL/PASSWORD AUTH IS DISABLED!"
+
+? Firebase IS NOT enabled
+? You MUST enable it in Firebase Console
+? Tell me: "AUTH NOT ENABLED"
+
+========================================
+IF AUTH NOT ENABLED:
+========================================
+
+1. Go to: https://console.firebase.google.com/project/hrp-wl/authentication/providers
+
+2. Find "Email/Password" in the list
+
+3. Click on it
+
+4. Toggle to ENABLE
+
+5. Click SAVE
+
+6. Come back to simple-test.html
+
+7. Click "SIGN UP" again
+
+8. Should now say: "? SUCCESS!"
+
+========================================
+?? JUST TELL ME:
+========================================
+
+After you click the GREEN "SIGN UP" button in simple-test.html:
+
+A) Does it say "SUCCESS"?
+B) Does it say "ERROR: auth/operation-not-allowed"?
+C) Does nothing happen?
+
+That's all I need to know!
+
+========================================
