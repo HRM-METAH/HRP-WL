@@ -1297,7 +1297,7 @@
 
             const tbodyB = document.getElementById('watch-list-boeing');
 
-            const openCases = caseHistory.filter(c => c.status !== 'Closed' && c.status !== 'Revised' && c.status !== 'Closed/Revised');
+            const openCases = caseHistory.filter(isValidCase).filter(c => c.status !== 'Closed' && c.status !== 'Revised' && c.status !== 'Closed/Revised');
 
             const AIRBUS_TYPES_SET = new Set(['A318', 'A319', 'A320', 'A321', 'A330', 'A340', 'A350', 'A380']);
 
@@ -1462,6 +1462,8 @@
             let sorted = caseHistory.slice().sort((a, b) => { let va = a[sortField] || ''; let vb = b[sortField] || ''; if (sortField === 'date') { va = new Date(va); vb = new Date(vb); } if (va < vb) return sortOrder === 'asc' ? -1 : 1; if (va > vb) return sortOrder === 'asc' ? 1 : -1; return 0; });
 
             let visible = sorted.filter(c => { const s = [c.caseId, c.reg, c.ata, c.status, c.reason, (c.steps || []).join(' '), c.health || ''].join(' ').toLowerCase(); return !filter || s.includes(filter); });
+
+            visible = visible.filter(isValidCase);
 
             visibleHistoryIds = visible.slice(0, 20).map(c => c.caseId);
 
@@ -2932,6 +2934,9 @@
 
   </body>
 </html>
+
+
+
 
 
 
