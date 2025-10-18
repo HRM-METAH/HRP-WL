@@ -749,7 +749,7 @@
                     <button class="btn" id="auth-signin">Sign In</button>
                     <button class="btn add" id="auth-signup">Sign Up</button>
                 </div>
-                <div id="auth-error" style="color:#e74c3c; font-size:12px; margin-top:8px;"></div>
+                <div id="auth-error" style="color:#fff; font-size:13px; margin-top:12px; padding:10px; background:#e74c3c; border-radius:5px; display:none; font-weight:bold;"></div>
                 <div id="auth-status" style="color:var(--accent); font-size:12px; margin-top:8px;"></div>
             </div>
         </div>
@@ -1603,7 +1603,7 @@
             const status = document.getElementById('auth-status');
             const overlayStatus = document.getElementById('auth-overlay-status');
             
-            err.textContent = '';
+            err.textContent = ''; err.style.display = 'none';
             status.textContent = '';
             if (overlayStatus) overlayStatus.textContent = '';
             
@@ -1634,7 +1634,7 @@
                 console.error('Sign in error:', e);
                 status.textContent = '';
                 const errorMsg = (e && e.message) ? e.message : 'Sign in failed';
-                err.textContent = errorMsg;
+                err.textContent = errorMsg; err.style.display = 'block';
                 if (overlayStatus) overlayStatus.textContent = errorMsg;
             }
         }
@@ -1646,7 +1646,7 @@
             const status = document.getElementById('auth-status');
             const overlayStatus = document.getElementById('auth-overlay-status');
             
-            err.textContent = '';
+            err.textContent = ''; err.style.display = 'none';
             status.textContent = '';
             if (overlayStatus) overlayStatus.textContent = '';
             
@@ -1677,7 +1677,7 @@
                 console.error('Sign up error:', e);
                 status.textContent = '';
                 const errorMsg = (e && e.message) ? e.message : 'Sign up failed';
-                err.textContent = errorMsg;
+                err.textContent = errorMsg; err.style.display = 'block';
                 if (overlayStatus) overlayStatus.textContent = errorMsg;
             }
         }
