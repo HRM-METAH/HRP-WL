@@ -239,8 +239,6 @@
             letter-spacing: 1px;
         }
 
-
-
         #history-list tr:nth-child(even) {
             background: #f4f4f6;
         }
@@ -754,6 +752,17 @@
                 <div id="auth-error" style="color:#e74c3c; font-size:12px; margin-top:8px;"></div>
                 <div id="auth-status" style="color:var(--accent); font-size:12px; margin-top:8px;"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- AUTH REQUIRED OVERLAY -->
+    <div id="auth-required-overlay" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:2000; backdrop-filter:blur(5px);">
+        <div style="background:var(--card); border:2px solid var(--accent); border-radius:12px; padding:40px; text-align:center; max-width:500px; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+            <div style="font-size:48px; margin-bottom:20px;">🔒</div>
+            <h2 style="color:var(--accent); font-size:24px; margin-bottom:12px;">Authentication Required</h2>
+            <p style="color:var(--muted); font-size:14px; margin-bottom:24px;">Please sign in to access the HRP Tracker and sync your data across devices.</p>
+            <button class="btn" id="auth-required-signin" style="font-size:16px; padding:10px 30px;">Sign In</button>
+            <div id="auth-overlay-status" style="color:var(--accent); font-size:12px; margin-top:12px; min-height:20px;"></div>
         </div>
     </div>
 
@@ -1592,17 +1601,41 @@
             const password = document.getElementById('auth-password').value;
             const err = document.getElementById('auth-error');
             const status = document.getElementById('auth-status');
+            const overlayStatus = document.getElementById('auth-overlay-status');
+            
             err.textContent = '';
             status.textContent = '';
+            if (overlayStatus) overlayStatus.textContent = '';
+            
+            console.log('performSignIn called with email:', email);
+            
             try {
-                if (!window.authApi) throw new Error('Auth not ready');
+                if (!window.authApi) {
+                    console.error('window.authApi not available!');
+                    throw new Error('Auth not ready');
+                }
+                
+                console.log('window.authApi available, attempting sign in...');
                 status.textContent = 'Signing in...';
+                if (overlayStatus) overlayStatus.textContent = 'Signing in...';
+                
                 await window.authApi.signIn(email, password);
-                status.textContent = 'Signed in! Syncing data...';
-                setTimeout(closeAuthModal, 1500);
+                
+                console.log('Sign in successful!');
+                status.textContent = 'Signed in! Loading data...';
+                if (overlayStatus) overlayStatus.textContent = 'Signed in! Loading data...';
+                
+                setTimeout(() => {
+                    closeAuthModal();
+                    status.textContent = '';
+                    if (overlayStatus) overlayStatus.textContent = '';
+                }, 1500);
             } catch (e) {
+                console.error('Sign in error:', e);
                 status.textContent = '';
-                err.textContent = (e && e.message) ? e.message : 'Sign in failed';
+                const errorMsg = (e && e.message) ? e.message : 'Sign in failed';
+                err.textContent = errorMsg;
+                if (overlayStatus) overlayStatus.textContent = errorMsg;
             }
         }
 
@@ -1611,17 +1644,41 @@
             const password = document.getElementById('auth-password').value;
             const err = document.getElementById('auth-error');
             const status = document.getElementById('auth-status');
+            const overlayStatus = document.getElementById('auth-overlay-status');
+            
             err.textContent = '';
             status.textContent = '';
+            if (overlayStatus) overlayStatus.textContent = '';
+            
+            console.log('performSignUp called with email:', email);
+            
             try {
-                if (!window.authApi) throw new Error('Auth not ready');
+                if (!window.authApi) {
+                    console.error('window.authApi not available!');
+                    throw new Error('Auth not ready');
+                }
+                
+                console.log('window.authApi available, creating account...');
                 status.textContent = 'Creating account...';
+                if (overlayStatus) overlayStatus.textContent = 'Creating account...';
+                
                 await window.authApi.signUp(email, password);
+                
+                console.log('Account created successfully!');
                 status.textContent = 'Account created! Signing in...';
-                setTimeout(closeAuthModal, 1500);
+                if (overlayStatus) overlayStatus.textContent = 'Account created! Signing in...';
+                
+                setTimeout(() => {
+                    closeAuthModal();
+                    status.textContent = '';
+                    if (overlayStatus) overlayStatus.textContent = '';
+                }, 1500);
             } catch (e) {
+                console.error('Sign up error:', e);
                 status.textContent = '';
-                err.textContent = (e && e.message) ? e.message : 'Sign up failed';
+                const errorMsg = (e && e.message) ? e.message : 'Sign up failed';
+                err.textContent = errorMsg;
+                if (overlayStatus) overlayStatus.textContent = errorMsg;
             }
         }
 
@@ -1633,15 +1690,31 @@
 
         function updateAuthUI() {
             const btn = document.getElementById('auth-btn');
+            const overlay = document.getElementById('auth-required-overlay');
             const u = window.currentUser;
+            
+            console.log('updateAuthUI called, user:', u);
+            
             if (u) {
-                btn.textContent = 'Sign Out';
-                btn.title = u.email || '';
-                btn.onclick = () => performSignOut();
+                // User is signed in
+                console.log('User signed in:', u.email);
+                btn.textContent = u.email || 'Sign Out';
+                btn.title = 'Click to sign out';
+                btn.onclick = () => {
+                    if(confirm('Sign out?')) {
+                        performSignOut();
+                    }
+                };
+                // Hide overlay
+                if (overlay) overlay.style.display = 'none';
             } else {
+                // User is NOT signed in
+                console.log('User NOT signed in');
                 btn.textContent = 'Sign In';
-                btn.title = '';
+                btn.title = 'Click to sign in';
                 btn.onclick = () => openAuthModal();
+                // Show overlay
+                if (overlay) overlay.style.display = 'flex';
             }
         }
 
@@ -1782,80 +1855,15 @@
 
             document.getElementById('sev-rules-body').addEventListener('click', handleSeverityTableEvents);
 
-
+            // Auth modal actions
+            document.getElementById('auth-close').addEventListener('click', closeAuthModal);
+            document.getElementById('auth-modal').addEventListener('click', (e) => { if (e.target.id === 'auth-modal') closeAuthModal(); });
+            document.getElementById('auth-signin').addEventListener('click', performSignIn);
+            document.getElementById('auth-signup').addEventListener('click', performSignUp);
+            document.getElementById('auth-required-signin').addEventListener('click', openAuthModal);
 
             // Download button: only create XLSX when clicked; name: base + today's date
-
             document.getElementById('download-xlsx').addEventListener('click', () => exportWorkbook({ forceDownloadXlsx: true }));
-
-            document.getElementById('set-save-folder').addEventListener('click', setSaveFolder);
-
-
-
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeWatchModal(); closeSeverityModal(); closeAuthModal(); } });
-
-            // Initialize auth UI
-            updateAuthUI();
-            window.addEventListener('auth-changed', updateAuthUI);
-
-            // Try loading from Firebase if signed in
-
-            if (window.firebaseApi && typeof window.firebaseApi.loadAll === 'function') {
-
-                try {
-
-                    const cloud = await window.firebaseApi.loadAll();
-
-                    if (cloud && Array.isArray(cloud.cases) && cloud.cases.length) {
-
-                        caseHistory = cloud.cases;
-
-                        if (cloud.seqMap && typeof cloud.seqMap === 'object') seqMap = cloud.seqMap;
-
-                        if (cloud.keywordSeverityMap && typeof cloud.keywordSeverityMap === 'object') keywordSeverityMap = cloud.keywordSeverityMap;
-
-                        renderHistory();
-
-                        updateCaseCounter();
-
-                        // Persist a local snapshot
-
-                        saveToStorage();
-
-                    }
-
-                } catch { }
-
-            }
-
-            // Listen for realtime cloud updates
-            window.addEventListener('cloud-cases-updated', (e) => {
-                const list = (e && e.detail && Array.isArray(e.detail.cases)) ? e.detail.cases : null;
-                if (!list) return;
-                const activeId = lastCase?.caseId;
-                caseHistory = list.slice();
-                if (activeId) { lastCase = caseHistory.find(c => c.caseId === activeId) || null; }
-                renderHistory();
-                updateCaseCounter();
-                saveToStorage();
-                buildWatchList();
-            });
-
-            window.addEventListener('cloud-meta-updated', (e) => {
-                const d = e && e.detail ? e.detail : {};
-                if (d.seqMap && typeof d.seqMap === 'object') {
-                    seqMap = d.seqMap;
-                    saveToStorage();
-                }
-                if (d.keywordSeverityMap && typeof d.keywordSeverityMap === 'object') {
-                    keywordSeverityMap = d.keywordSeverityMap;
-                    try {
-                        localStorage.setItem('hrpSeverityRules', JSON.stringify(keywordSeverityMap));
-                    } catch { }
-                    renderSeverityRulesTable();
-                    buildWatchList();
-                }
-            });
         });
 
     </script>
@@ -1984,6 +1992,7 @@
         });
 
         // Export APIs
+        console.log('Exporting window.authApi and window.firebaseApi...');
         window.authApi = {
             signUp: (email, password) => createUserWithEmailAndPassword(auth, email, password),
             signIn: (email, password) => signInWithEmailAndPassword(auth, email, password),
