@@ -1728,182 +1728,84 @@
         function updateAuthUI() {
             const btn = document.getElementById('auth-btn');
             const overlay = document.getElementById('auth-required-overlay');
+            // ensure label exists under the button
+            let label = document.getElementById('auth-user-label');
+            if (!label && btn && btn.parentElement) {
+                label = document.createElement('div');
+                label.id = 'auth-user-label';
+                label.style.position = 'absolute';
+                label.style.left = '14px';
+                label.style.top = '36px';
+                label.style.margin = '0 14px';
+                label.style.fontSize = '11px';
+                label.style.color = '#6b7280';
+                label.style.display = 'none';
+                btn.parentElement.appendChild(label);
+            }
+
             const u = window.currentUser;
-            
             console.log('updateAuthUI called, user:', u);
-            
+
             if (u) {
                 // User is signed in
                 console.log('User signed in:', u.email);
-                btn.textContent = u.email || 'Sign Out';
-                btn.title = 'Click to sign out';
-                btn.onclick = () => {
-                    if(confirm('Sign out?')) {
-                        performSignOut();
-                    }
-                };
-                // Hide overlay
+                if (btn) {
+                    btn.textContent = 'Sign Out';
+                    btn.title = 'Click to sign out';
+                    btn.onclick = () => { if (confirm('Sign out?')) { performSignOut(); } };
+                }
+                if (label) { label.textContent = 'Signed user: ' + (u.email || u.uid || ''); label.style.display = ''; }
                 if (overlay) overlay.style.display = 'none';
             } else {
                 // User is NOT signed in
                 console.log('User NOT signed in');
-                btn.textContent = 'Sign In';
-                btn.title = 'Click to sign in';
-                btn.onclick = () => openAuthModal();
-                // Show overlay
+                if (btn) {
+                    btn.textContent = 'Sign In';
+                    btn.title = 'Click to sign in';
+                    btn.onclick = () => openAuthModal();
+                }
+                if (label) { label.textContent = ''; label.style.display = 'none'; }
                 if (overlay) overlay.style.display = 'flex';
             }
         }
 
-        function newCase() {
-
-            lastCase = null;
-
-            document.getElementById('date').value = new Date().toISOString().slice(0, 10);
-
-            const defaultType = AC_TYPES[0];
-
-            document.getElementById('ac-type').value = defaultType;
-
-            document.getElementById('ac-reg').value = 'A7-';
-
-            document.getElementById('ata').value = '';
-
-            document.getElementById('reason').value = '';
-
-            document.getElementById('health-indicator').textContent = '';
-
-            document.getElementById('health-indicator').style.display = 'none';
-
-            document.getElementById('steps-list').innerHTML = '';
-
-            addStep();
-
-            document.getElementById('actions-wrap').innerHTML = '';
-
-            document.getElementById('feedback').value = '';
-
-            document.getElementById('toggle-closed').checked = false;
-
-            document.getElementById('toggle-revised').checked = false;
-
-            updatePill('', 'Open');
-
-            unlockEntryFields();
-
-            unlockExitFields();
-
-            unlockFollowupFields();
-
-            // hide delete button in new case mode
-
-            const delBtn = document.getElementById('delete-case');
-
-            if (delBtn) delBtn.style.display = 'none';
-
-        }
-
-
-
-        // Init
-
-        document.addEventListener('DOMContentLoaded', async () => {
-
-            loadSeverityRules();
-
-            await loadSaveDirHandle();
-
-            // Prefer loading from JSON file in selected folder; fallback to localStorage
-
-            await loadDataFromFile();
-
-            if (!caseHistory.length) loadFromStorage();
-
-            populateACType();
-
-            populateATA();
-
-            // Start with a fresh form
-
-            newCase();
-
-            // Refresh UI from persisted data
-
-            renderHistory();
-
-            updateCaseCounter();
-
-
-
-            document.getElementById('add-step').onclick = () => addStep();
-
-            document.getElementById('add-action').onclick = () => addExitAction();
-
-            document.getElementById('save').onclick = () => saveEntry();
-
-            document.getElementById('edit-entry').onclick = () => unlockEntryFields();
-
-            document.getElementById('save-exit').onclick = () => onSaveExit();
-
-            document.getElementById('edit-exit').onclick = () => unlockExitFields();
-
-            document.getElementById('save-followup').onclick = () => onSaveFollowup();
-
-            document.getElementById('edit-followup').onclick = () => unlockFollowupFields();
-
-            document.getElementById('new-case-btn').onclick = () => newCase();
-
-            const pill = document.getElementById('caseid'); pill.addEventListener('click', () => { if (pill.textContent) { try { navigator.clipboard && navigator.clipboard.writeText(pill.textContent); } catch (_) { } } });
-
-            const onStatusToggleChanged = () => updatePill(lastCase?.caseId || '', computeStatusFromToggles());
-
-            document.getElementById('toggle-closed').addEventListener('change', onStatusToggleChanged);
-
-            document.getElementById('toggle-revised').addEventListener('change', onStatusToggleChanged);
-
-            document.getElementById('history-filter').addEventListener('input', () => renderHistory());
-
-            document.getElementById('reason').addEventListener('input', updateHealthFromReason);
-
-
-
-
-            // Watch list actions
-
-            document.getElementById('watch-list-btn').addEventListener('click', openWatchModal);
-
-            document.getElementById('watch-close').addEventListener('click', closeWatchModal);
-
-            document.getElementById('watch-modal').addEventListener('click', (e) => { if (e.target.id === 'watch-modal') closeWatchModal(); });
-
-
-
-            // Severity rules actions
-
-            document.getElementById('severity-btn').addEventListener('click', openSeverityModal);
-
-            document.getElementById('sev-close').addEventListener('click', closeSeverityModal);
-
-            document.getElementById('sev-modal').addEventListener('click', (e) => { if (e.target.id === 'sev-modal') closeSeverityModal(); });
-
-            document.getElementById('sev-add').addEventListener('click', addSeverityRule);
-
-            document.getElementById('sev-rules-body').addEventListener('change', handleSeverityTableEvents);
-
-            document.getElementById('sev-rules-body').addEventListener('click', handleSeverityTableEvents);
-
-            // Auth modal actions
-            document.getElementById('auth-close').addEventListener('click', closeAuthModal);
-            document.getElementById('auth-modal').addEventListener('click', (e) => { if (e.target.id === 'auth-modal') closeAuthModal(); });
-            document.getElementById('auth-signin').addEventListener('click', () => { console.log('Modal Sign In clicked'); performSignIn(); });
-            console.log('Auth signin listener attached');
-            document.getElementById('auth-signup').addEventListener('click', () => { console.log('Modal Sign Up clicked'); performSignUp(); });
-            console.log('Auth signup listener attached');
-            document.getElementById('auth-required-signin').addEventListener('click', () => { console.log('Overlay Sign In clicked'); openAuthModal(); });
-            document.getElementById('auth-required-signup').addEventListener('click', () => { console.log('Overlay Sign Up clicked'); openAuthModal(); });
-
-            // Download button: only create XLSX when clicked; name: base + today's date
-            document.getElementById('download-xlsx').addEventListener('click', () => exportWorkbook({ forceDownloadXlsx: true }));
+        // Hook auth/meta realtime updates to UI and data
+        window.addEventListener('auth-changed', async (e) => {
+            try { updateAuthUI(); } catch {}
+            const user = e?.detail?.user;
+            if (user && window.firebaseApi?.loadAll) {
+                try {
+                    const data = await window.firebaseApi.loadAll();
+                    if (data) {
+                        caseHistory = Array.isArray(data.cases) ? data.cases.slice() : [];
+                        seqMap = (data.seqMap && typeof data.seqMap === 'object') ? data.seqMap : {};
+                        if (data.keywordSeverityMap && typeof data.keywordSeverityMap === 'object') {
+                            keywordSeverityMap = data.keywordSeverityMap;
+                        }
+                        renderHistory();
+                        updateCaseCounter();
+                        try { buildWatchList(); } catch {}
+                    }
+                } catch (err) { console.warn('loadAll failed', err); }
+            }
+        });
+
+        window.addEventListener('cloud-cases-updated', (ev) => {
+            try {
+                const arr = ev?.detail?.cases;
+                if (Array.isArray(arr)) {
+                    caseHistory = arr.slice();
+                    renderHistory();
+                    updateCaseCounter();
+                }
+            } catch {}
+        });
+        window.addEventListener('cloud-meta-updated', (ev) => {
+            try {
+                const d = ev?.detail || {};
+                if (d.seqMap && typeof d.seqMap === 'object') seqMap = d.seqMap;
+                if (d.keywordSeverityMap && typeof d.keywordSeverityMap === 'object') keywordSeverityMap = d.keywordSeverityMap;
+            } catch {}
         });
 
     </script>
@@ -2049,6 +1951,458 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
