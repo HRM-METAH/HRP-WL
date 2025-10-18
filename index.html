@@ -266,8 +266,6 @@
                 z-index: 1;
             }
 
-
-
         @media (min-width: 1100px) {
             .left-pane {
                 flex: 1.4;
@@ -1353,6 +1351,17 @@
 
         function detectHealthIndicator(text) { const t = String(text || '').toLowerCase(); for (const [kw, ind] of Object.entries(HEALTH_MAP)) { if (t.includes(kw)) return ind; } return ''; }
 
+        // Only accept valid HRP cases in UI lists (avoid showing user docs/emails)
+        function isValidCase(c) {
+            try {
+                if (!c || typeof c !== 'object') return false;
+                if (typeof c.caseId !== 'string') return false;
+                if (!c.caseId.startsWith('HRP/')) return false;
+                if (!c.reg || !c.ata) return false;
+                return true;
+            } catch { return false; }
+        }
+
         function updateHealthFromReason() { const reason = document.getElementById('reason').value; const ind = detectHealthIndicator(reason); const el = document.getElementById('health-indicator'); if (ind) { el.textContent = ind; el.style.display = ''; } else { el.textContent = ''; el.style.display = 'none'; } if (lastCase) updateCurrentCase({ health: ind }); }
 
         function addStep(val = '') { const list = document.getElementById('steps-list'); const div = document.createElement('div'); div.className = 'step-row'; const ta = document.createElement('textarea'); ta.placeholder = 'Describe step'; ta.value = val; const del = document.createElement('button'); del.textContent = '✕'; del.className = 'btn add'; del.onclick = () => div.remove(); div.appendChild(ta); div.appendChild(del); list.appendChild(div); }
@@ -1566,7 +1575,7 @@
 
             // show delete case button when editing an existing case
             const delBtn = document.getElementById('delete-case');
-            if (delBtn) delBtn.style.display = '';
+            if delBtn) delBtn.style.display = '';
 
             // bring form into view
             try { document.querySelector('.left-pane')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch {}
@@ -2747,7 +2756,182 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;
+
+
+
+</script>
+
+  </body>
+</html>
 
 
 
