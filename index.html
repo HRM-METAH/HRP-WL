@@ -761,7 +761,7 @@
             <div style="font-size:48px; margin-bottom:20px;">🔒</div>
             <h2 style="color:var(--accent); font-size:24px; margin-bottom:12px;">Authentication Required</h2>
             <p style="color:var(--muted); font-size:14px; margin-bottom:24px;">Please sign in to access the HRP Tracker and sync your data across devices.</p>
-            <button class="btn" id="auth-required-signin" style="font-size:16px; padding:10px 30px;">Sign In</button>
+            <div style="display:flex; gap:12px; justify-content:center;"><button class="btn" id="auth-required-signin" style="font-size:16px; padding:10px 30px;">Sign In</button><button class="btn add" id="auth-required-signup" style="font-size:16px; padding:10px 30px;">Sign Up</button></div>
             <div id="auth-overlay-status" style="color:var(--accent); font-size:12px; margin-top:12px; min-height:20px;"></div>
         </div>
     </div>
@@ -1858,9 +1858,12 @@
             // Auth modal actions
             document.getElementById('auth-close').addEventListener('click', closeAuthModal);
             document.getElementById('auth-modal').addEventListener('click', (e) => { if (e.target.id === 'auth-modal') closeAuthModal(); });
-            document.getElementById('auth-signin').addEventListener('click', performSignIn);
-            document.getElementById('auth-signup').addEventListener('click', performSignUp);
-            document.getElementById('auth-required-signin').addEventListener('click', openAuthModal);
+            document.getElementById('auth-signin').addEventListener('click', () => { console.log('Modal Sign In clicked'); performSignIn(); });
+            console.log('Auth signin listener attached');
+            document.getElementById('auth-signup').addEventListener('click', () => { console.log('Modal Sign Up clicked'); performSignUp(); });
+            console.log('Auth signup listener attached');
+            document.getElementById('auth-required-signin').addEventListener('click', () => { console.log('Overlay Sign In clicked'); openAuthModal(); });
+            document.getElementById('auth-required-signup').addEventListener('click', () => { console.log('Overlay Sign Up clicked'); openAuthModal(); });
 
             // Download button: only create XLSX when clicked; name: base + today's date
             document.getElementById('download-xlsx').addEventListener('click', () => exportWorkbook({ forceDownloadXlsx: true }));
