@@ -734,7 +734,7 @@
 
 
     <!-- AUTH MODAL -->
-    <div id="auth-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none; align-items:center; justify-content:center; z-index:1000;">
+    <div id="auth-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none; align-items:center; justify-content:center; z-index:3001;">
         <div class="watch-card" style="max-width:500px;">
             <div class="watch-head">
                 <div class="watch-title">Account</div>
@@ -761,7 +761,7 @@
             <div style="font-size:48px; margin-bottom:20px;">🔒</div>
             <h2 style="color:var(--accent); font-size:24px; margin-bottom:12px;">Authentication Required</h2>
             <p style="color:var(--muted); font-size:14px; margin-bottom:24px;">Please sign in to access the HRP Tracker and sync your data across devices.</p>
-            <div style="display:flex; gap:12px; justify-content:center;"><button class="btn" id="auth-required-signin" onclick="console.log('Button clicked!'); document.getElementById('auth-modal').style.display='flex';" style="font-size:16px; padding:10px 30px;">Sign In</button><button class="btn add" id="auth-required-signup" onclick="console.log('Button clicked!'); document.getElementById('auth-modal').style.display='flex';" style="font-size:16px; padding:10px 30px;">Sign Up</button></div>
+            <div style="display:flex; gap:12px; justify-content:center;"><button class="btn" id="auth-required-signin" onclick="console.log('Button clicked!'); document.getElementById('auth-modal').style.display='flex'; document.getElementById('auth-required-overlay').style.display='none';" style="font-size:16px; padding:10px 30px;">Sign In</button><button class="btn add" id="auth-required-signup" onclick="console.log('Button clicked!'); document.getElementById('auth-modal').style.display='flex'; document.getElementById('auth-required-overlay').style.display='none';" style="font-size:16px; padding:10px 30px;">Sign Up</button></div>
             <div id="auth-overlay-status" style="color:var(--accent); font-size:12px; margin-top:12px; min-height:20px;"></div>
         </div>
     </div>
@@ -1416,7 +1416,7 @@
 
         }
 
-        let visibleHistoryIds = List;
+        let visibleHistoryIds = [];
 
         // Override renderHistory to keep track of visible ids for click handlers
 
@@ -2012,6 +2012,55 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
