@@ -1566,45 +1566,69 @@
 
             // show delete case button when editing an existing case
             const delBtn = document.getElementById('delete-case');
-            if delBtn) delBtn.style.display = '';
+            if (delBtn) delBtn.style.display = '';
 
             // bring form into view
             try { document.querySelector('.left-pane')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch {}
         }
 
-        function deleteCase(visibleIndex) {
-
-            const id = visibleHistoryIds[visibleIndex];
-            const idx = caseHistory.findIndex(c => c.caseId === id);
-            if (idx === -1) return;
-
-            // Only allow deletion of the currently selected (opened) case
-            if (!lastCase || lastCase.caseId !== id) {
-                // Open the case instead and require the user to press the Delete Case button
-                editCase(visibleIndex);
-                alert('Opened the case. Use the Delete Case button to delete the selected case.');
-                return;
+        // Minimal auth modal helpers and actions (in case initial bindings failed)
+        function openAuthModal() {
+            try {
+                const m = document.getElementById('auth-modal'); if (m) m.style.display = 'flex';
+                const ov = document.getElementById('auth-required-overlay'); if (ov) ov.style.display = 'none';
+            } catch {}
+        }
+        function closeAuthModal() { try { const m = document.getElementById('auth-modal'); if (m) m.style.display = 'none'; } catch {} }
+        async function waitForAuthApi(timeoutMs = 8000) {
+            const start = Date.now();
+            while (!window.authApi) {
+                if (Date.now() - start > timeoutMs) throw new Error('Auth not ready');
+                await new Promise(r => setTimeout(r, 100));
             }
-
-            if (!confirm('Delete this case?')) return;
-
-            const removedIndex = caseHistory.findIndex(c => c.caseId === id);
-            if (removedIndex === -1) return;
-
-            const removed = caseHistory.splice(removedIndex, 1)[0];
-
-            if (lastCase && removed && lastCase.caseId === removed.caseId) {
-                lastCase = null;
-                newCase();
-            }
-
-            renderHistory();
-            updateCaseCounter();
-            saveToStorage();
-            if (window.firebaseApi) {
-                window.firebaseApi.deleteCase(id).catch(() => { });
+            return window.authApi;
+        }
+        window.performSignIn = async function () {
+            const email = (document.getElementById('auth-email')?.value || '').trim();
+            const password = document.getElementById('auth-password')?.value || '';
+            const err = document.getElementById('auth-error');
+            const status = document.getElementById('auth-status');
+            if (err) { err.textContent = ''; err.style.display = 'none'; }
+            if (status) status.textContent = 'Signing in...';
+            try {
+                const api = await waitForAuthApi();
+                await api.signIn(email, password);
+                if (status) status.textContent = 'Signed in!';
+                setTimeout(() => { try { closeAuthModal(); if (status) status.textContent = ''; } catch {} }, 800);
+            } catch (e) {
+                if (status) status.textContent = '';
+                if (err) { err.textContent = (e?.message || 'Sign in failed'); err.style.display = 'block'; }
             }
         }
+        window.performSignUp = async function () {
+            const email = (document.getElementById('auth-email')?.value || '').trim();
+            const password = document.getElementById('auth-password')?.value || '';
+            const err = document.getElementById('auth-error');
+            const status = document.getElementById('auth-status');
+            if (err) { err.textContent = ''; err.style.display = 'none'; }
+            if (status) status.textContent = 'Creating account...';
+            try {
+                const api = await waitForAuthApi();
+                await api.signUp(email, password);
+                if (status) status.textContent = 'Account created! Signed in';
+                setTimeout(() => { try { closeAuthModal(); if (status) status.textContent = ''; } catch {} }, 800);
+            } catch (e) {
+                if (status) status.textContent = '';
+                if (err) { err.textContent = (e?.message || 'Sign up failed'); err.style.display = 'block'; }
+            }
+        }
+        // Defensive click delegation for auth controls
+        document.addEventListener('click', (e) => {
+            const id = e?.target?.id;
+            if (id === 'auth-close') { try { closeAuthModal(); } catch {} }
+            else if (id === 'auth-signin') { try { window.performSignIn(); } catch {} }
+            else if (id === 'auth-signup') { try { window.performSignUp(); } catch {} }
+        });
     </script>
 
     <!-- Firebase (modular v9+) via CDN in a module script -->
@@ -2703,7 +2727,28 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;
+
 
 
 
