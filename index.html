@@ -1950,33 +1950,51 @@
             } catch (e) { return false; }
         }
 
-        
+        // Realtime listeners
+        let unsubCases = null, unsubSeq = null, unsubRules = null;
+        function startRealtime() {
+            if (unsubCases || unsubSeq || unsubRules) return;
+            try {
+                unsubCases = onSnapshot(collection(db, 'cases'), (snapshot) => {
+                    const arr = snapshot.docs.map(d => d.data());
+                    try { window.dispatchEvent(new CustomEvent('cloud-cases-updated', { detail: { cases: arr } })); } catch { }
+                });
+                unsubSeq = onSnapshot(doc(db, 'meta', 'seq'), (docSnap) => {
+                    const data = docSnap.exists() ? (docSnap.data() || {}) : {};
+                    try { window.dispatchEvent(new CustomEvent('cloud-meta-updated', { detail: { seqMap: data.seqMap || {} } })); } catch { }
+                });
+                unsubRules = onSnapshot(doc(db, 'meta', 'severityRules'), (docSnap) => {
+                    const data = docSnap.exists() ? (docSnap.data() || {}) : {};
+                    try { window.dispatchEvent(new CustomEvent('cloud-meta-updated', { detail: { keywordSeverityMap: data.keywordSeverityMap || {} } })); } catch { }
+                });
             } catch { }
         }
+        
+        function stopRealtime() {
+            try { if (unsubCases) unsubCases(); if (unsubSeq) unsubSeq(); if (unsubRules) unsubRules(); } catch { }
+            unsubCases = unsubSeq = unsubRules = null;
+        }
 
-        // Listen for realtime cloud updates
-        window.addEventListener('cloud-cases-updated', (e) => {
-            const list = (e && e.detail && Array.isArray(e.detail.cases)) ? e.detail.cases : null;
-            if (!list) return;
-            const activeId = lastCase?.caseId;
-            caseHistory = list.slice();
-            if (activeId) { lastCase = caseHistory.find(c => c.caseId === activeId) || null; }
-            renderHistory();
-            updateCaseCounter();
-            saveToStorage();
-            buildWatchList();
+        onAuthStateChanged(auth, user => {
+            window.currentUser = user || null;
+            try {
+                window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user: window.currentUser } }));
+            } catch { }
+            if (user) { startRealtime(); } else { stopRealtime(); }
         });
 
-        window.addEventListener('cloud-meta-updated', (e) => {
-            const d = e && e.detail ? e.detail : {};
-            if (d.seqMap && typeof d.seqMap === 'object') { seqMap = d.seqMap; saveToStorage(); }
-            if (d.keywordSeverityMap && typeof d.keywordSeverityMap === 'object') {
-                keywordSeverityMap = d.keywordSeverityMap;
-                try { localStorage.setItem('hrpSeverityRules', JSON.stringify(keywordSeverityMap)); } catch { }
-                renderSeverityRulesTable();
-                buildWatchList();
-            }
-        });
+        // Export APIs
+        window.authApi = {
+            signUp: (email, password) => createUserWithEmailAndPassword(auth, email, password),
+            signIn: (email, password) => signInWithEmailAndPassword(auth, email, password),
+            signOut: () => signOut(auth)
+        };
+
+        window.firebaseApi = {
+            saveAll, loadAll, deleteCase: deleteCaseRemote,
+            saveCase, saveSeqMap, saveSeverityRules,
+            startRealtime, stopRealtime
+        };
     </script>
 
 </body>
