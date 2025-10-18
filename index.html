@@ -111,8 +111,6 @@
             margin-bottom: 5px;
         }
 
-
-
         .step-row {
             display: flex;
             gap: 4px;
@@ -483,7 +481,7 @@
 
                 <button class="btn" id="edit-entry" style="display:none;">Edit</button>
 
-                <button class="btn add" id="delete-case" style="display:none; border-color:#e74c3c; color:#e74c3c;">Delete Case</button>
+                <button class="btn add" id="delete-case" style="display:none; border-color:#e74c3c; color:#e74c3c;" onclick="deleteCurrentCase()">Delete Case</button>
 
             </div>
 
@@ -766,7 +764,8 @@
         </div>
     </div>
 
-    <script>`r`n        alert("JavaScript is loading! If you see this, the script is running.");`r`n        console.log("=== SCRIPT STARTED ===");
+    <script>
+        console.log("=== SCRIPT STARTED ===");
 
         // --- CASE STATUS TRACKING & HISTORY & CSV/XLSX EXPORT + PERSISTENCE ---
 
@@ -1377,6 +1376,29 @@
         function onSaveExit() { const actions = Array.from(document.querySelectorAll('#actions-wrap .step-row')).map(row => ({ date: row.querySelector('input[type=date]').value, action: row.querySelector('textarea').value.trim() })).filter(a => a.action); if (actions.length === 0) { alert('Please add at least one action.'); return; } updateCurrentCase({ exitActions: actions }); lockExitFields(); /*saveCSV();*/ saveToStorage(); if (window.firebaseApi) { window.firebaseApi.saveCase?.(lastCase).catch?.(() => { }); } }
 
         // --- FOLLOW UP LOGIC ---
+        function onSaveFollowup() {
+            const status = computeStatusFromToggles();
+            const feedback = (document.getElementById('feedback').value || '').trim();
+            const active = ensureActiveCase();
+            if (!active) { alert('No case selected to update.'); return; }
+            updateCurrentCase({ status, feedback });
+            lockFollowupFields();
+        }
+
+        function deleteCurrentCase() {
+            if (!lastCase || !lastCase.caseId) { alert('No case selected to delete.'); return; }
+            const id = lastCase.caseId;
+            if (!confirm('Delete case ' + id + '?')) return;
+            const idx = caseHistory.findIndex(c => c.caseId === id);
+            if (idx === -1) return;
+            caseHistory.splice(idx, 1);
+            lastCase = null;
+            renderHistory();
+            updateCaseCounter();
+            saveToStorage();
+            if (window.firebaseApi) { window.firebaseApi.deleteCase(id).catch(() => { }); }
+            newCase();
+        }
 
         function lockFollowupFields() { ['toggle-closed', 'toggle-revised', 'feedback', 'save-followup'].forEach(id => { const el = document.getElementById(id); if (!el) return; el.disabled = true; if (el.classList) el.classList.add('locked'); }); document.getElementById('edit-followup').style.display = ''; document.getElementById('save-followup').style.display = 'none'; }
 
@@ -1596,6 +1618,16 @@
             document.getElementById('auth-modal').style.display = 'none';
         }
 
+        // Helper to wait for Firebase authApi to be ready
+        async function waitForAuthApi(timeoutMs = 5000) {
+            const start = Date.now();
+            while (!window.authApi) {
+                if (Date.now() - start > timeoutMs) throw new Error('Auth not ready');
+                await new Promise(r => setTimeout(r, 100));
+            }
+            return window.authApi;
+        }
+
         window.performSignIn = async function() {
             const email = (document.getElementById('auth-email').value || '').trim();
             const password = document.getElementById('auth-password').value;
@@ -1610,6 +1642,8 @@
             console.log('performSignIn called with email:', email);
             
             try {
+                await waitForAuthApi();
+                
                 if (!window.authApi) {
                     console.error('window.authApi not available!');
                     throw new Error('Auth not ready');
@@ -1619,7 +1653,8 @@
                 status.textContent = 'Signing in...';
                 if (overlayStatus) overlayStatus.textContent = 'Signing in...';
                 
-                await window.authApi.signIn(email, password);
+                const api = await waitForAuthApi(8000);
+                await api.signIn(email, password);
                 
                 console.log('Sign in successful!');
                 status.textContent = 'Signed in! Loading data...';
@@ -1653,6 +1688,8 @@
             console.log('performSignUp called with email:', email);
             
             try {
+                await waitForAuthApi();
+                
                 if (!window.authApi) {
                     console.error('window.authApi not available!');
                     throw new Error('Auth not ready');
@@ -1662,7 +1699,7 @@
                 status.textContent = 'Creating account...';
                 if (overlayStatus) overlayStatus.textContent = 'Creating account...';
                 
-                await window.authApi.signUp(email, password);
+                const api = await waitForAuthApi(8000); await api.signUp(email, password);
                 
                 console.log('Account created successfully!');
                 status.textContent = 'Account created! Signing in...';
@@ -2012,6 +2049,398 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
