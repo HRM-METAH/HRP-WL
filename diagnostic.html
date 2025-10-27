@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Diagnostic Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .box { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .success { color: #27ae60; font-weight: bold; }
+        .error { color: #e74c3c; font-weight: bold; }
+        .info { color: #3498db; }
+        button { padding: 12px 24px; font-size: 16px; margin: 10px 5px; cursor: pointer; border: none; border-radius: 5px; }
+        .btn-test { background: #3498db; color: white; }
+        input { padding: 10px; margin: 5px; width: 250px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; }
+        pre { background: #f8f8f8; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>?? Firebase Authentication Diagnostic</h1>
+
+    <div class="box">
+        <h2>Step 1: Firebase Connection</h2>
+        <div id="connection-status">Testing...</div>
+    </div>
+
+    <div class="box">
+        <h2>Step 2: Auth Provider Check</h2>
+        <div id="provider-status">Checking...</div>
+    </div>
+
+    <div class="box">
+        <h2>Step 3: Test Sign Up</h2>
+        <input type="email" id="test-email" placeholder="email@example.com" value="test@example.com">
+        <input type="password" id="test-password" placeholder="password" value="Password123">
+        <br>
+        <button class="btn-test" onclick="testSignUp()">Test Sign Up</button>
+        <button class="btn-test" onclick="testSignIn()">Test Sign In</button>
+        <div id="auth-result" style="margin-top: 10px;"></div>
+    </div>
+
+    <div class="box">
+        <h2>Step 4: Detailed Logs</h2>
+        <pre id="logs"></pre>
+    </div>
+
+    <script type="module">
+        let logs = [];
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push(`[${timestamp}] ${type.toUpperCase()}: ${message}`);
+            document.getElementById('logs').textContent = logs.join('\n');
+            console.log(message);
+        }
+
+        window.addLog = addLog;
+
+        try {
+            addLog('Starting Firebase diagnostic...');
+            
+            // Import Firebase
+            addLog('Importing Firebase modules...');
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js");
+            const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, fetchSignInMethodsForEmail } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js");
+            
+            addLog('? Firebase modules imported successfully', 'success');
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyAoVay3OoKHDNqoRYRLl55YKmUaiLrEjk8",
+                authDomain: "hrp-wl.firebaseapp.com",
+                projectId: "hrp-wl",
+                storageBucket: "hrp-wl.appspot.com",
+                messagingSenderId: "835582896089",
+                appId: "1:835582896089:web:a94407f71c656c1ce71bc8"
+            };
+
+            addLog('Initializing Firebase app...');
+            const app = initializeApp(firebaseConfig);
+            addLog('? Firebase app initialized', 'success');
+            document.getElementById('connection-status').innerHTML = '<span class="success">? Connected to Firebase</span>';
+
+            addLog('Getting Auth instance...');
+            const auth = getAuth(app);
+            addLog('? Auth instance obtained', 'success');
+
+            // Check current auth state
+            addLog('Current auth state: ' + (auth.currentUser ? auth.currentUser.email : 'Not signed in'));
+
+            // Check auth domain
+            addLog('Auth domain: ' + firebaseConfig.authDomain);
+            
+            // Try to check available sign-in methods
+            addLog('Checking available authentication methods...');
+            try {
+                const methods = await fetchSignInMethodsForEmail(auth, 'test@example.com');
+                addLog('Available sign-in methods: ' + (methods.length > 0 ? methods.join(', ') : 'None found'));
+                document.getElementById('provider-status').innerHTML = '<span class="info">Sign-in methods: ' + (methods.length > 0 ? methods.join(', ') : 'Email/Password may not be enabled') + '</span>';
+            } catch (error) {
+                addLog('Could not check sign-in methods: ' + error.message, 'error');
+                document.getElementById('provider-status').innerHTML = '<span class="error">? Cannot check methods: ' + error.code + '</span>';
+            }
+
+            // Export functions for testing
+            window.testSignUp = async function() {
+                const email = document.getElementById('test-email').value;
+                const password = document.getElementById('test-password').value;
+                const resultDiv = document.getElementById('auth-result');
+                
+                addLog('Attempting sign up with: ' + email);
+                resultDiv.innerHTML = '<span class="info">Creating account...</span>';
+                
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    addLog('? Sign up successful! User: ' + userCredential.user.email, 'success');
+                    resultDiv.innerHTML = '<span class="success">? Account created successfully!<br>Email: ' + userCredential.user.email + '<br>UID: ' + userCredential.user.uid + '</span>';
+                } catch (error) {
+                    addLog('? Sign up failed: ' + error.code + ' - ' + error.message, 'error');
+                    resultDiv.innerHTML = '<span class="error">? Error: ' + error.code + '<br>' + error.message + '</span>';
+                    
+                    // Provide specific guidance based on error
+                    if (error.code === 'auth/operation-not-allowed') {
+                        resultDiv.innerHTML += '<br><br><strong>FIX:</strong> Email/Password authentication is not enabled in Firebase Console.<br>Go to: <a href="https://console.firebase.google.com/project/hrp-wl/authentication/providers" target="_blank">Firebase Console ? Authentication ? Sign-in method</a><br>Enable "Email/Password" provider.';
+                    } else if (error.code === 'auth/email-already-in-use') {
+                        resultDiv.innerHTML += '<br><br>This email is already registered. Try signing in instead.';
+                    } else if (error.code === 'auth/weak-password') {
+                        resultDiv.innerHTML += '<br><br>Password must be at least 6 characters.';
+                    } else if (error.code === 'auth/invalid-email') {
+                        resultDiv.innerHTML += '<br><br>Please enter a valid email address.';
+                    }
+                }
+            };
+
+            window.testSignIn = async function() {
+                const email = document.getElementById('test-email').value;
+                const password = document.getElementById('test-password').value;
+                const resultDiv = document.getElementById('auth-result');
+                
+                addLog('Attempting sign in with: ' + email);
+                resultDiv.innerHTML = '<span class="info">Signing in...</span>';
+                
+                try {
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    addLog('? Sign in successful! User: ' + userCredential.user.email, 'success');
+                    resultDiv.innerHTML = '<span class="success">? Signed in successfully!<br>Email: ' + userCredential.user.email + '<br>UID: ' + userCredential.user.uid + '</span>';
+                } catch (error) {
+                    addLog('? Sign in failed: ' + error.code + ' - ' + error.message, 'error');
+                    resultDiv.innerHTML = '<span class="error">? Error: ' + error.code + '<br>' + error.message + '</span>';
+                    
+                    if (error.code === 'auth/operation-not-allowed') {
+                        resultDiv.innerHTML += '<br><br><strong>FIX:</strong> Email/Password authentication is not enabled.<br>Go to: <a href="https://console.firebase.google.com/project/hrp-wl/authentication/providers" target="_blank">Firebase Console</a> and enable it.';
+                    } else if (error.code === 'auth/user-not-found') {
+                        resultDiv.innerHTML += '<br><br>No account found with this email. Try signing up first.';
+                    } else if (error.code === 'auth/wrong-password') {
+                        resultDiv.innerHTML += '<br><br>Incorrect password.';
+                    }
+                }
+            };
+
+            addLog('? Diagnostic ready. Try signing up or signing in above.', 'success');
+
+        } catch (error) {
+            addLog('? FATAL ERROR: ' + error.message, 'error');
+            document.getElementById('connection-status').innerHTML = '<span class="error">? Failed to connect: ' + error.message + '</span>';
+            document.getElementById('provider-status').innerHTML = '<span class="error">? Cannot check - connection failed</span>';
+        }
+    </script>
+</body>
+</html>

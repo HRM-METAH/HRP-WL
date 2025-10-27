@@ -1,0 +1,164 @@
+========================================
+?? AUTH & SIGN IN - DEBUGGING GUIDE
+========================================
+Commit: a4b8a0d
+Date: 2025-10-18
+
+========================================
+? WHAT'S BEEN ADDED:
+========================================
+
+1. ? AUTH REQUIRED OVERLAY
+   - Grey overlay with blur effect
+   - Shows when user is NOT signed in
+   - Blocks access to entire app
+   - Big ?? icon with "Authentication Required" message
+   - "Sign In" button opens auth modal
+
+2. ? USER EMAIL IN BUTTON
+   - When signed in: Shows user's email address
+   - When signed out: Shows "Sign In"
+   - Click email to confirm sign out
+
+3. ? CONSOLE DEBUGGING
+   - All auth operations now log to console
+   - Check browser Console (F12) to see:
+     * "Exporting window.authApi and window.firebaseApi..."
+     * "Auth state changed, user: [email or null]"
+     * "performSignIn called with email: ..."
+     * "Sign in successful!"
+     * Errors if any occur
+
+4. ? BETTER ERROR HANDLING
+   - Shows specific error messages
+   - Updates overlay status text
+   - Logs all errors to console
+
+========================================
+?? HOW TO TEST:
+========================================
+
+1. OPEN BROWSER CONSOLE (F12)
+   - Look for: "Exporting window.authApi and window.firebaseApi..."
+   - Should see: true, true
+
+2. CHECK OVERLAY
+   - Page should be greyed out
+   - Should see ?? icon
+   - Should see "Authentication Required"
+
+3. TRY SIGN UP
+   - Click "Sign In" button
+   - Enter email: test@example.com
+   - Enter password: password123
+   - Click "Sign Up"
+   - Watch console for messages
+
+4. CHECK FOR ERRORS
+   Console should show:
+   ? "performSignIn called with email: test@example.com"
+   ? "window.authApi available, attempting sign in..."
+   ? "Sign in successful!"
+   ? "Auth state changed, user: test@example.com"
+   ? Overlay disappears
+   ? Button shows: "test@example.com"
+
+========================================
+? IF SIGN IN STILL DOESN'T WORK:
+========================================
+
+CHECK CONSOLE FOR:
+
+1. "window.authApi not available!"
+   ? Firebase module didn't load
+   ? Check network tab for firebase CDN errors
+
+2. "Auth/invalid-email" or "Auth/weak-password"
+   ? Email format wrong or password too short
+   ? Use valid email format
+   ? Use password with 6+ characters
+
+3. "Auth/email-already-in-use"
+   ? Account exists, use "Sign In" instead
+   ? Or use different email
+
+4. "Auth/wrong-password"
+   ? Incorrect password
+   ? Reset or use correct password
+
+5. Network errors
+   ? Check internet connection
+   ? Check Firebase project is active
+   ? Check API key is valid
+
+========================================
+?? WHAT TO CHECK IN CONSOLE:
+========================================
+
+Type these in Console (F12):
+
+1. window.authApi
+   ? Should show: {signUp: ƒ, signIn: ƒ, signOut: ƒ}
+
+2. window.firebaseApi
+   ? Should show: {saveAll: ƒ, loadAll: ƒ, ...}
+
+3. window.currentUser
+   ? null (when signed out)
+   ? {email: "...", uid: "..."} (when signed in)
+
+========================================
+?? WHAT HAPPENS WHEN SIGNED IN:
+========================================
+
+1. ? Overlay disappears (page accessible)
+2. ? Button shows your email
+3. ? Realtime sync starts automatically
+4. ? Can create/edit cases
+5. ? Data syncs across devices
+
+========================================
+?? WHAT HAPPENS WHEN SIGNED OUT:
+========================================
+
+1. ? Overlay appears (page blocked)
+2. ? Button shows "Sign In"
+3. ? Realtime sync stops
+4. ? Must sign in to use app
+5. ? Cannot access any features
+
+========================================
+?? FIREBASE RULES TO CHECK:
+========================================
+
+Make sure your Firestore rules allow:
+- Authenticated users to read/write their own data
+- Shared collections for multi-device sync
+
+Rules should be:
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /cases/{caseId} {
+      allow read, write: if request.auth != null;
+    }
+    match /meta/{doc} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
+
+========================================
+?? NEXT STEPS IF IT WORKS:
+========================================
+
+1. Sign in on Device 1
+2. Create a test case
+3. Sign in on Device 2 (same account)
+4. Watch case appear automatically!
+5. Edit on Device 2
+6. See changes on Device 1 instantly
+
+========================================

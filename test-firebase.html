@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Auth Test</title>
+</head>
+<body>
+    <h1>Firebase Auth Test</h1>
+    <div id="status">Testing...</div>
+    <button id="test-btn">Test Sign Up</button>
+    <div id="result" style="margin-top:20px; font-family:monospace; white-space:pre-wrap;"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoVay3OoKHDNqoRYRLl55YKmUaiLrEjk8",
+            authDomain: "hrp-wl.firebaseapp.com",
+            projectId: "hrp-wl",
+            storageBucket: "hrp-wl.appspot.com",
+            messagingSenderId: "835582896089",
+            appId: "1:835582896089:web:a94407f71c656c1ce71bc8"
+        };
+
+        let result = document.getElementById('result');
+        let status = document.getElementById('status');
+
+        try {
+            result.textContent += "1. Initializing Firebase...\n";
+            const app = initializeApp(firebaseConfig);
+            result.textContent += "? Firebase initialized\n\n";
+
+            result.textContent += "2. Getting Auth...\n";
+            const auth = getAuth(app);
+            result.textContent += "? Auth obtained\n\n";
+
+            result.textContent += "3. Current user: " + (auth.currentUser ? auth.currentUser.email : "null") + "\n\n";
+
+            status.textContent = "? Firebase loaded successfully!";
+            status.style.color = "green";
+
+            document.getElementById('test-btn').onclick = async () => {
+                try {
+                    result.textContent += "4. Testing sign up with test" + Date.now() + "@test.com...\n";
+                    const testEmail = "test" + Date.now() + "@test.com";
+                    const testPassword = "password123";
+                    
+                    const userCredential = await createUserWithEmailAndPassword(auth, testEmail, testPassword);
+                    result.textContent += "? Sign up successful!\n";
+                    result.textContent += "User: " + userCredential.user.email + "\n";
+                    result.textContent += "UID: " + userCredential.user.uid + "\n";
+                } catch (error) {
+                    result.textContent += "? Error: " + error.code + " - " + error.message + "\n";
+                }
+            };
+
+        } catch (error) {
+            result.textContent += "? FATAL ERROR: " + error.message + "\n";
+            status.textContent = "? Firebase failed to load";
+            status.style.color = "red";
+            console.error("Firebase error:", error);
+        }
+    </script>
+</body>
+</html>

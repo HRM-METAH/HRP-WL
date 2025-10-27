@@ -1,0 +1,2021 @@
+<!doctype html>
+
+<html lang="en">
+
+
+
+<head>
+
+    <meta charset="utf-8">
+
+    <title>HRP ENTRY</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+
+        :root {
+            --bg: #f4f4f6;
+            --card: #fff;
+            --ink: #1a1a1a;
+            --muted: #6b7280;
+            --bord: #d9d9de;
+            --accent: #800000;
+        }
+
+
+
+        body {
+            margin: 0;
+            font-family: Segoe UI, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+        }
+
+
+
+        .main-wrap {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--bord);
+            border-radius: 8px;
+            padding: 10px 14px;
+            max-width: 700px;
+            margin: 12px auto;
+        }
+
+
+
+        h2 {
+            margin: 0 0 6px 0;
+            color: var(--accent);
+            font-size: 16px;
+        }
+
+
+
+        .caseid {
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 6px;
+            display: block;
+            font-size: 13px;
+        }
+
+
+
+        #caseid {
+            display: table;
+            margin: 0 auto;
+        }
+
+
+
+        label {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 1px;
+            display: block;
+        }
+
+
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 5px 7px;
+            border: 1px solid var(--bord);
+            border-radius: 5px;
+            background: #fff;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+
+
+        textarea {
+            min-height: 32px;
+            resize: vertical;
+        }
+
+
+
+        .steps {
+            margin-bottom: 5px;
+        }
+
+
+
+        .step-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 3px;
+        }
+
+
+
+            .step-row textarea {
+                flex: 1;
+            }
+
+
+
+        .btn {
+            padding: 3px 8px;
+            border: 1px solid var(--accent);
+            border-radius: 5px;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+
+
+            .btn.add {
+                background: #fff;
+                color: var(--accent);
+                border: 1px solid var(--accent);
+            }
+
+
+
+            .btn:disabled,
+            .locked {
+                background: #eee !important;
+                color: #aaa !important;
+                border-color: #ccc !important;
+                pointer-events: none;
+            }
+
+
+
+        .row {
+            display: flex;
+            gap: 6px;
+        }
+
+
+
+        .col {
+            flex: 1;
+        }
+
+
+
+        .compact {
+            margin-bottom: 3px;
+        }
+
+
+
+        .history-panel {
+            min-width: 500px;
+        }
+
+
+
+        table {
+            width: 100%;
+            font-size: 12px;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+
+
+        th,
+        td {
+            padding: 3px 4px;
+            text-align: left;
+        }
+
+
+
+            th:nth-child(1),
+            td:nth-child(1) {
+                width: 28%;
+            }
+
+
+
+            th:nth-child(2),
+            td:nth-child(2) {
+                width: 18%;
+            }
+
+
+
+            th:nth-child(3),
+            td:nth-child(3) {
+                width: 18%;
+            }
+
+
+
+            th:nth-child(4),
+            td:nth-child(4) {
+                width: 18%;
+            }
+
+
+
+        .pill {
+            display: inline-block;
+            background: #27ae60;
+            color: #fff;
+            border-radius: 20px;
+            padding: 2px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 0;
+            letter-spacing: 1px;
+        }
+
+        #history-list tr:nth-child(even) {
+            background: #f4f4f6;
+        }
+
+        #history-list tr:nth-child(odd) {
+            background: #fff;
+        }
+
+        #history-list td {
+            vertical-align: middle;
+        }
+
+        #history-list {
+            border-top: 1px solid var(--bord);
+        }
+
+        .history-table-wrap {
+            max-height: 340px;
+            overflow-y: auto;
+            border-top: 1px solid var(--bord);
+        }
+
+            .history-table-wrap thead th {
+                position: sticky;
+                top: 0;
+                background: #f8f8fa;
+                z-index: 1;
+            }
+
+
+
+        @media (min-width: 1100px) {
+            .left-pane {
+                flex: 1.4;
+            }
+
+            .history-panel {
+                flex: 1.6;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .left-pane {
+                flex: 1.2;
+            }
+
+            .history-panel {
+                flex: 1.8;
+            }
+        }
+
+
+
+        #watch-modal, #sev-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .watch-card {
+            background: #fff;
+            border: 1px solid var(--bord);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1100px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .watch-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #f8f8fa;
+            border-bottom: 1px solid var(--bord);
+        }
+
+        .watch-title {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .watch-body {
+            padding: 8px 12px;
+            overflow: auto;
+            max-height: calc(80vh - 48px);
+        }
+
+        .sev-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            color: #fff;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .watch-date {
+            background: var(--accent);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 14px;
+            font-weight: bold;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .watch-split {
+            display: flex;
+            gap: 12px;
+        }
+
+        .watch-col {
+            flex: 1;
+            min-width: 300px;
+        }
+
+            .watch-col h4 {
+                margin: 4px 0 6px 0;
+                color: var(--accent);
+                font-size: 13px;
+                text-align: center;
+            }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+</head>
+
+
+
+<body>
+
+    <!-- TITLE ABOVE COUNTER -->
+    <div style="width:100%; display:flex; justify-content:center; align-items:center; margin-top:12px; position:relative;">
+        <button class="btn" id="auth-btn" style="position:absolute; left:14px; top:0; margin:7px 14px;">Sign In</button>
+
+        <div style="text-align:center; flex:1;">
+            <div style="font-size:18px; font-weight:bold; color:var(--accent); margin-bottom:4px; letter-spacing:1px;">
+                HRP TRACKER
+            </div>
+            <div class="card"
+                 style="max-width:340px; padding:7px 12px; background:#f8f8fa; color:var(--accent); font-weight:bold; font-size:13px; text-align:center; display:inline-block;">
+                <span id="counter-open">Open: 0</span> | <span id="counter-closed">Closed: 0</span> | <span id="counter-revised">Revised: 0</span>
+            </div>
+            <button class="btn add" id="new-case-btn" style="margin-top:7px;">New Case</button>
+        </div>
+
+        <button class="btn" id="set-save-folder" style="position:absolute; right:460px; top:0; margin:7px 14px;">Set Save Folder</button>
+        <button class="btn" id="severity-btn" style="position:absolute; right:300px; top:0; margin:7px 14px;">SEVERITY RULES</button>
+        <button class="btn" id="watch-list-btn" style="position:absolute; right:140px; top:0; margin:7px 14px;">HRP WATCH LIST</button>
+        <button class="btn" id="download-xlsx"
+                style="position:absolute; right:0; top:0; margin:7px 14px;">
+            Download XLSX
+        </button>
+    </div>
+
+    <!-- MAIN LAYOUT: ENTRY/EXIT/FOLLOWUP LEFT, HISTORY RIGHT -->
+
+    <div class="main-wrap" style="display:flex; gap:18px; align-items:flex-start;">
+
+        <div class="left-pane" style="flex:2; min-width:420px;">
+
+            <!-- HRP ENTRY CARD -->
+
+            <div class="card">
+
+                <span class="caseid pill" id="caseid" style="display:none; cursor:pointer;"></span>
+
+                <h2>HRP ENTRY</h2>
+
+                <div class="row compact">
+
+                    <div class="col">
+
+                        <label for="date">Date</label>
+
+                        <input id="date" type="date" style="width:100px;">
+
+                    </div>
+
+                    <div class="col">
+
+                        <label for="ac-type">AC Type</label>
+
+                        <select id="ac-type"></select>
+
+                    </div>
+
+                </div>
+
+                <div class="row compact">
+
+                    <div class="col">
+
+                        <label for="ac-reg">AC Reg</label>
+
+                        <input id="ac-reg" placeholder="A7-..." style="width:100px;">
+
+                    </div>
+
+                    <div class="col">
+
+                        <label for="ata">ATA</label>
+
+                        <select id="ata" style="width:100px;"></select>
+
+                    </div>
+
+                </div>
+
+                <label for="reason">Reason</label>
+
+                <textarea id="reason" placeholder="Describe issue / reason"></textarea>
+
+                <div id="health-wrap" class="compact">
+
+                    <label>Health Indicator</label>
+
+                    <span id="health-indicator" class="pill" style="display:none;background:#2c3e50;"></span>
+
+                </div>
+
+                <div class="steps">
+
+                    <label>HRP Steps</label>
+
+                    <div id="steps-list"></div>
+
+                    <button class="btn add" type="button" id="add-step">Add Step</button>
+
+                </div>
+
+                <button class="btn" id="save">Save</button>
+
+                <button class="btn" id="edit-entry" style="display:none;">Edit</button>
+
+                <button class="btn add" id="delete-case" style="display:none; border-color:#e74c3c; color:#e74c3c;">Delete Case</button>
+
+            </div>
+
+            <!-- HRP EXIT CARD -->
+
+            <div class="card">
+
+                <h2>HRP EXIT</h2>
+
+                <div id="actions-wrap"></div>
+
+                <button class="btn add" id="add-action">Add Action</button>
+
+                <button class="btn" id="save-exit">Save</button>
+
+                <button class="btn" id="edit-exit" style="display:none;">Edit</button>
+
+            </div>
+
+            <!-- FOLLOW UP CARD -->
+
+            <div class="card">
+
+                <h2>HRP FOLLOW UP</h2>
+
+                <div class="row compact">
+
+                    <label><input type="checkbox" id="toggle-closed"> Case Closed</label>
+
+                    <label><input type="checkbox" id="toggle-revised"> Case Revised</label>
+
+                </div>
+
+                <label for="feedback">Feedback</label>
+
+                <textarea id="feedback" placeholder="Notes for department / summary"></textarea>
+
+                <button class="btn" id="save-followup">Save</button>
+
+                <button class="btn" id="edit-followup" style="display:none;">Edit</button>
+
+            </div>
+
+        </div>
+
+        <!-- HISTORY PANEL -->
+
+        <div class="history-panel" style="flex:2; min-width:500px;">
+
+            <div class="card" style="padding:7px 7px; background:#f8f8fa; max-width:none;">
+
+                <h3 style="margin:0 0 6px 0; color:var(--accent); font-size:13px; text-align:center;">
+                    Recent Cases
+
+                </h3>
+
+                <input id="history-filter" placeholder="Filter..."
+                       style="width:100%; margin-bottom:6px; padding:4px; border:1px solid var(--bord); border-radius:5px;">
+
+                <div class="history-table-wrap">
+
+                    <table style="width:100%; border-collapse:collapse; table-layout:fixed; font-size:12px;">
+
+                        <!-- Update thead for sorting -->
+
+                        <thead>
+
+                            <tr style="color:var(--muted);">
+
+                                <th style="text-align:left;cursor:pointer;" onclick="setSort('caseId')">CASE ID</th>
+
+                                <th style="text-align:left;cursor:pointer;" onclick="setSort('reg')">REG</th>
+
+                                <th style="text-align:left;cursor:pointer;" onclick="setSort('ata')">ATA</th>
+
+                                <th style="text-align:left;cursor:pointer;" onclick="setSort('status')">STS</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="history-list"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- WATCH LIST MODAL -->
+
+    <div id="watch-modal">
+
+        <div class="watch-card">
+
+            <div class="watch-head">
+
+                <div class="watch-title">HRP WATCH LIST - OPEN CASES</div>
+
+                <div style="flex:1; text-align:center;"><span id="watch-date" class="watch-date"></span></div>
+
+                <button class="btn add" id="watch-close">Close</button>
+
+            </div>
+
+            <div class="watch-body">
+
+                <div class="watch-split">
+
+                    <div class="watch-col">
+
+                        <h4 style="text-align:center;">AIRBUS</h4>
+
+                        <table style="width:100%; border-collapse:collapse; table-layout:fixed; font-size:12px;">
+
+                            <thead>
+
+                                <tr style="color:var(--muted); border-bottom:1px solid var(--bord);">
+
+                                    <th style="text-align:left; width:22%;">CASE ID</th>
+
+                                    <th style="text-align:left; width:18%;">REG</th>
+
+                                    <th style="text-align:left; width:12%;">ATA</th>
+
+                                    <th style="text-align:left; width:14%;">SEVERITY</th>
+
+                                    <th style="text-align:left;">REASON</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="watch-list-airbus"></tbody>
+
+                        </table>
+
+                    </div>
+
+                    <div class="watch-col">
+
+                        <h4 style="text-align:center;">BOEING</h4>
+
+                        <table style="width:100%; border-collapse:collapse; table-layout:fixed; font-size:12px;">
+
+                            <thead>
+
+                                <tr style="color:var(--muted); border-bottom:1px solid var(--bord);">
+
+                                    <th style="text-align:left; width:22%;">CASE ID</th>
+
+                                    <th style="text-align:left; width:18%;">REG</th>
+
+                                    <th style="text-align:left; width:12%;">ATA</th>
+
+                                    <th style="text-align:left; width:14%;">SEVERITY</th>
+
+                                    <th style="text-align:left;">REASON</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="watch-list-boeing"></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- SEVERITY RULES MODAL -->
+
+    <div id="sev-modal">
+
+        <div class="watch-card">
+
+            <div class="watch-head">
+
+                <div class="watch-title">SEVERITY RULES</div>
+
+                <button class="btn add" id="sev-close">Close</button>
+
+            </div>
+
+            <div class="watch-body">
+
+                <div style="margin-bottom:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+
+                    <input id="sev-new-keyword" placeholder="keyword (e.g., AOG)" style="width:160px;">
+
+                    <select id="sev-new-severity" style="width:120px;">
+
+                        <option value="RED">RED</option>
+
+                        <option value="AMBER">AMBER</option>
+
+                        <option value="YELLOW">YELLOW</option>
+
+                        <option value="GREEN">GREEN</option>
+
+                    </select>
+
+                    <button class="btn" id="sev-add">Add</button>
+
+                </div>
+
+                <table style="width:100%; border-collapse:collapse; table-layout:fixed; font-size:12px;">
+
+                    <thead>
+
+                        <tr style="color:var(--muted); border-bottom:1px solid var(--bord);">
+
+                            <th style="text-align:left; width:40%;">KEYWORD</th>
+
+                            <th style="text-align:left; width:30%;">SEVERITY</th>
+
+                            <th style="text-align:left;">ACTIONS</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="sev-rules-body"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- AUTH MODAL -->
+    <div id="auth-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.35); display:none; align-items:center; justify-content:center; z-index:1000;">
+        <div class="watch-card" style="max-width:500px;">
+            <div class="watch-head">
+                <div class="watch-title">Account</div>
+                <button class="btn add" id="auth-close">Close</button>
+            </div>
+            <div class="watch-body">
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
+                    <input id="auth-email" type="email" placeholder="email@example.com" style="max-width:260px;">
+                    <input id="auth-password" type="password" placeholder="password" style="max-width:200px;">
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn" id="auth-signin" onclick="window.performSignIn()">Sign In</button>
+                    <button class="btn add" id="auth-signup" onclick="window.performSignUp()">Sign Up</button>
+                </div>
+                <div id="auth-error" style="color:#fff; font-size:13px; margin-top:12px; padding:10px; background:#e74c3c; border-radius:5px; display:none; font-weight:bold;"></div>
+                <div id="auth-status" style="color:var(--accent); font-size:12px; margin-top:8px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH REQUIRED OVERLAY -->
+    <div id="auth-required-overlay" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:2000; backdrop-filter:blur(5px);">
+        <div style="background:var(--card); border:2px solid var(--accent); border-radius:12px; padding:40px; text-align:center; max-width:500px; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+            <div style="font-size:48px; margin-bottom:20px;">🔒</div>
+            <h2 style="color:var(--accent); font-size:24px; margin-bottom:12px;">Authentication Required</h2>
+            <p style="color:var(--muted); font-size:14px; margin-bottom:24px;">Please sign in to access the HRP Tracker and sync your data across devices.</p>
+            <div style="display:flex; gap:12px; justify-content:center;"><button class="btn" id="auth-required-signin" onclick="console.log('Button clicked!'); document.getElementById('auth-modal').style.display='flex';" style="font-size:16px; padding:10px 30px;">Sign In</button><button class="btn add" id="auth-required-signup" onclick="console.log('Button clicked!'); document.getElementById('auth-modal').style.display='flex';" style="font-size:16px; padding:10px 30px;">Sign Up</button></div>
+            <div id="auth-overlay-status" style="color:var(--accent); font-size:12px; margin-top:12px; min-height:20px;"></div>
+        </div>
+    </div>
+
+    <script>
+
+        // --- CASE STATUS TRACKING & HISTORY & CSV/XLSX EXPORT + PERSISTENCE ---
+
+        let caseStatus = { open: 0, closed: 0, revised: 0 };
+
+        let caseHistory = [];
+
+        let lastCase = null;
+
+        // Add sorting state
+
+        let sortField = 'date';
+
+        let sortOrder = 'desc';
+
+        // Local persistence keys
+
+        const STORAGE_KEY_CASES = 'hrpCasesV1';
+
+
+
+        // File System Access API + IndexedDB handle storage
+
+        const supportsFS = 'showDirectoryPicker' in window && window.isSecureContext;
+
+        let saveDirHandle = null;
+
+        let _dbPromise = null;
+
+        function getDB() {
+
+            if (_dbPromise) return _dbPromise;
+
+            _dbPromise = new Promise((resolve, reject) => {
+
+                const req = indexedDB.open('hrpDB', 1);
+
+                req.onupgradeneeded = () => { const db = req.result; if (!db.objectStoreNames.contains('handles')) db.createObjectStore('handles'); };
+
+                req.onsuccess = () => resolve(req.result);
+
+                req.onerror = () => reject(req.error);
+
+            });
+
+            return _dbPromise;
+
+        }
+
+        async function idbSet(key, value) { const db = await getDB(); return new Promise((resolve, reject) => { const tx = db.transaction('handles', 'readwrite'); tx.objectStore('handles').put(value, key); tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); }); }
+
+        async function idbGet(key) { const db = await getDB(); return new Promise((resolve, reject) => { const tx = db.transaction('handles', 'readonly'); const req = tx.objectStore('handles').get(key); req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error); }); }
+
+        async function loadSaveDirHandle() { try { if (!supportsFS) return; const handle = await idbGet('saveDir'); if (handle) saveDirHandle = handle; } catch { } }
+
+        async function setSaveFolder() { if (!supportsFS) { alert('Your browser must be Chromium-based and running over HTTPS/localhost to pick a folder.'); return; } try { const handle = await window.showDirectoryPicker(); await idbSet('saveDir', handle); saveDirHandle = handle; alert('Save folder set. Files will be written there on Save.'); } catch (e) { } }
+
+        async function writeFileToDir(filename, data) {
+
+            try {
+
+                if (!supportsFS || !saveDirHandle) return false;
+
+                let perm = await saveDirHandle.queryPermission({ mode: 'readwrite' });
+
+                if (perm !== 'granted') { perm = await saveDirHandle.requestPermission({ mode: 'readwrite' }); if (perm !== 'granted') return false; }
+
+                const fileHandle = await saveDirHandle.getFileHandle(filename, { create: true });
+
+                const writable = await fileHandle.createWritable();
+
+                await writable.write(data);
+
+                await writable.close();
+
+                return true;
+
+            } catch { return false; }
+
+        }
+
+        // Helpers for naming and data-file persistence
+
+        function getBaseName() {
+
+            const p = (window.location && window.location.pathname) || 'index.html';
+
+            const name = p.substring(p.lastIndexOf('/') + 1) || 'index.html';
+
+            return name.replace(/\.[^/.]+$/, '');
+
+        }
+
+        async function ensureSaveFolder() {
+
+            if (!supportsFS) return false;
+
+            if (saveDirHandle) return true;
+
+            try {
+
+                const handle = await window.showDirectoryPicker();
+
+                await idbSet('saveDir', handle);
+
+                saveDirHandle = handle;
+
+                return true;
+
+            } catch (e) {
+
+                alert('Folder not selected. Please click "Set Save Folder" and pick the folder that contains this HTML file.');
+
+                return false;
+
+            }
+
+        }
+
+        async function saveDataToFolder() {
+
+            try {
+
+                const ready = await ensureSaveFolder();
+
+                if (!ready) return;
+
+                const payload = { cases: caseHistory, severityRules: keywordSeverityMap, seqMap };
+
+                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+
+                const fname = `${getBaseName()}.json`;
+
+                await writeFileToDir(fname, blob);
+
+            } catch { }
+
+        }
+
+        async function loadDataFromFile() {
+
+            if (!supportsFS || !saveDirHandle) return;
+
+            try {
+
+                const fname = `${getBaseName()}.json`;
+
+                const fileHandle = await saveDirHandle.getFileHandle(fname, { create: false });
+
+                const file = await fileHandle.getFile();
+
+                const text = await file.text();
+
+                const data = safeParse(text, null);
+
+                if (data && typeof data === 'object') {
+
+                    if (Array.isArray(data.cases)) caseHistory = data.cases;
+
+                    if (data.severityRules && typeof data.severityRules === 'object') keywordSeverityMap = data.severityRules;
+
+                    if (data.seqMap && typeof data.seqMap === 'object') seqMap = data.seqMap;
+
+                }
+
+            } catch { }
+
+        }
+
+
+
+        function safeParse(json, fallback) { try { return JSON.parse(json); } catch { return fallback; } }
+
+        // Redirect localStorage persistence to file-based persistence
+
+        function saveToStorage() { try { /* replaced with file save */ saveDataToFolder(); } catch { } }
+
+        function loadFromStorage() { try { const raw = localStorage.getItem(STORAGE_KEY_CASES); if (!raw) return; const data = safeParse(raw, null); if (!data || typeof data !== 'object') return; if (Array.isArray(data.caseHistory)) caseHistory = data.caseHistory; else if (Array.isArray(data.cases)) caseHistory = data.cases; if (data.seqMap && typeof data.seqMap === 'object') seqMap = data.seqMap; } catch { } }
+
+
+
+        function getPillColor(status) { if (status === 'Closed') return '#ffb300'; if (status === 'Revised' || status === 'Closed/Revised') return '#27ae60'; return '#e74c3c'; }
+
+        function updateCaseCounter() {
+
+            caseStatus.closed = caseHistory.filter(c => c.status === 'Closed' || c.status === 'Closed/Revised').length;
+
+            caseStatus.revised = caseHistory.filter(c => c.status === 'Revised' || c.status === 'Closed/Revised').length;
+
+            caseStatus.open = caseHistory.filter(c => c.status !== 'Closed' && c.status !== 'Revised' && c.status !== 'Closed/Revised').length;
+
+            document.getElementById('counter-open').textContent = 'Open: ' + caseStatus.open;
+
+            document.getElementById('counter-closed').textContent = 'Closed: ' + caseStatus.closed;
+
+            document.getElementById('counter-revised').textContent = 'Revised: ' + caseStatus.revised;
+
+        }
+
+        function setCaseStatus(status) { updateCaseCounter(); if (caseHistory.length) { caseHistory[0].status = status; renderHistory(); /*saveCSV();*/ saveToStorage(); if (window.firebaseApi) { window.firebaseApi.saveAll(caseHistory, seqMap, keywordSeverityMap).catch(() => { }); } } if (lastCase) lastCase.status = status; }
+
+        function addToHistory(caseId, reg, ata, status, date, acType, reason, steps, exitActions, feedback) {
+            const health = detectHealthIndicator(reason);
+            const entry = { caseId, reg, ata, status, date, acType, reason, steps, exitActions, feedback, health };
+            caseHistory.unshift(entry);
+            renderHistory();
+            lastCase = entry;
+            /*saveCSV();*/
+            saveToStorage();
+            if (window.firebaseApi) {
+                window.firebaseApi.saveCase?.(entry).catch?.(() => { });
+                window.firebaseApi.saveSeqMap?.(seqMap).catch?.(() => { });
+            }
+        }
+
+        function setSort(field) { if (sortField === field) { sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; } else { sortField = field; sortOrder = 'asc'; } renderHistory(); }
+
+        function renderHistory() {
+
+            const filter = (document.getElementById('history-filter')?.value || '').toLowerCase();
+
+            const tb = document.getElementById('history-list');
+
+            let sorted = caseHistory.slice().sort((a, b) => { let va = a[sortField] || ''; let vb = b[sortField] || ''; if (sortField === 'date') { va = new Date(va); vb = new Date(vb); } if (va < vb) return sortOrder === 'asc' ? -1 : 1; if (va > vb) return sortOrder === 'asc' ? 1 : -1; return 0; });
+
+            let visible = sorted.filter(c => { const s = [c.caseId, c.reg, c.ata, c.status, c.reason, (c.steps || []).join(' '), c.health || ''].join(' ').toLowerCase(); return !filter || s.includes(filter); });
+
+            let html = visible.slice(0, 20).map((c, i) => { const pillColor = getPillColor(c.status); return `<tr><td><a href="#" class="pill" style="color:inherit;text-decoration:none;background:${pillColor};" onclick="editCase(${i});return false;">${c.caseId}</a></td><td>${c.reg}</td><td>${c.ata}</td><td>${c.status}</td></tr>`; }).join('');
+
+            tb.innerHTML = html;
+
+        }
+
+        function saveCSV() {
+
+            const header = ["CASE ID", "DATE", "AC TYPE", "AC REG", "ATA", "REASON", "STEPS", "EXIT ACTIONS", "STATUS", "HEALTH", "FEEDBACK"];
+
+            const lines = [header.join(",")];
+
+            caseHistory.forEach(c => {
+
+                lines.push([
+
+                    c.caseId, c.date, c.acType, c.reg, c.ata,
+
+                    (c.reason || '').replace(/\r?\n/g, ' '),
+
+                    (c.steps || []).join(' | '),
+
+                    (c.exitActions || []).map(a => a.date + ': ' + a.action).join(' | '),
+
+                    c.status, c.health || '', (c.feedback || '').replace(/\r?\n/g, ' ')
+
+                ].map(v => '"' + String(v || '').replace(/"/g, '""') + '"').join(","));
+
+            });
+
+            // Append severity rules section
+
+            lines.push("");
+
+            lines.push("SEVERITY RULES");
+
+            lines.push(["KEYWORD", "SEVERITY"].join(","));
+
+            Object.entries(keywordSeverityMap).forEach(([kw, sev]) => {
+
+                lines.push([kw, sev].map(v => '"' + String(v || '').replace(/"/g, '""') + '"').join(","));
+
+            });
+
+            // Keep a CSV Blob in memory only (no auto file writes)
+
+            window.latestCSVBlob = new Blob([lines.join("\r\n")], { type: 'text/csv' });
+
+        }
+
+        function downloadCSV() { if (!window.latestCSVBlob) { saveCSV(); } const a = document.createElement('a'); a.href = URL.createObjectURL(window.latestCSVBlob); a.download = 'HRP_Tracker_Cases.csv'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+
+        function buildCasesAoA() {
+
+            const aoa = [["CASE ID", "DATE", "AC TYPE", "AC REG", "ATA", "REASON", "STEPS", "EXIT ACTIONS", "STATUS", "HEALTH", "FEEDBACK"]];
+
+            caseHistory.forEach(c => aoa.push([c.caseId, c.date, c.acType, c.reg, c.ata, c.reason || '', (c.steps || []).join(' | '), (c.exitActions || []).map(a => a.date + ': ' + a.action).join(' | '), c.status, c.health || '', c.feedback || '']));
+
+            return aoa;
+
+        }
+
+        function buildSeverityAoA() { const aoa = [["KEYWORD", "SEVERITY"]]; Object.entries(keywordSeverityMap).forEach(([kw, sev]) => aoa.push([kw, sev])); return aoa; }
+
+        async function exportWorkbook(opts = {}) {
+
+            const { forceDownloadXlsx = false } = opts;
+
+            try {
+
+                const wb = XLSX.utils.book_new();
+
+                const ws1 = XLSX.utils.aoa_to_sheet(buildCasesAoA());
+
+                const ws2 = XLSX.utils.aoa_to_sheet(buildSeverityAoA());
+
+                XLSX.utils.book_append_sheet(wb, ws1, 'Cases');
+
+                XLSX.utils.book_append_sheet(wb, ws2, 'Severity Rules');
+
+
+
+                // Build filename: same as HTML base name + today's date
+
+                const base = getBaseName();
+
+                const today = new Date().toISOString().slice(0, 10);
+
+                const xlsxName = `${base}_${today}.xlsx`;
+
+
+
+                let savedToFolder = false;
+
+                if (supportsFS && saveDirHandle) {
+
+                    const arrayBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+                    savedToFolder = await writeFileToDir(xlsxName, new Blob([arrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+
+                }
+
+
+
+                if (forceDownloadXlsx || !savedToFolder) {
+
+                    XLSX.writeFile(wb, xlsxName);
+
+                }
+
+            } catch (e) {
+
+                // fallback: download CSV of cases
+
+                downloadCSV();
+
+            }
+
+        }
+
+
+
+        // Theme AC Types
+
+        const AC_TYPES = ["A320", "A330", "A350", "A321", "B737", "B777", "B787", "Other"];
+
+
+
+        // ATA Chapters
+
+        const ATA_CHAPTERS = [
+
+            "05", "06", "07", "08", "09", "10", "11", "12",  "20",
+
+            "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "38", "41", "42", "45", "46", "47", "49",
+
+            "51", "52", "53", "54", "55", "56", "57",
+
+            "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "91"
+
+        ];
+
+        // Health indicator keyword map (customize as needed)
+
+        const HEALTH_MAP = {
+
+            'engine': 'Powerplant',
+
+            'apu': 'APU',
+
+            'fuel': 'Fuel',
+
+            'hydraulic': 'Hydraulics',
+
+            'hyd': 'Hydraulics',
+
+            'leak': 'Hydraulics',
+
+            'landing gear': 'Landing Gear',
+
+            'gear': 'Landing Gear',
+
+            'brake': 'Brakes',
+
+            'tyre': 'Landing Gear',
+
+            'tire': 'Landing Gear',
+
+            'avionics': 'Avionics',
+
+            'fms': 'Avionics',
+
+            'radar': 'Avionics',
+
+            'navigation': 'Avionics',
+
+            'autopilot': 'Avionics',
+
+            'ecam': 'Avionics',
+
+            'efis': 'Avionics',
+
+            'display': 'Avionics',
+
+            'cabin': 'Cabin',
+
+            'seat': 'Cabin',
+
+            'galley': 'Cabin',
+
+            'lav': 'Cabin',
+
+            'toilet': 'Cabin',
+
+            'pack': 'Air Systems',
+
+            'bleed': 'Air Systems',
+
+            'pressur': 'Air Systems',
+
+            'ice': 'Ice & Rain',
+
+            'deice': 'Ice & Rain',
+
+            'anti-ice': 'Ice & Rain',
+
+            'electrical': 'Electrical',
+
+            'battery': 'Electrical',
+
+            'generator': 'Electrical',
+
+            'smoke': 'Safety',
+
+            'fire': 'Safety',
+
+            'bird': 'Environmental',
+
+            'fod': 'Safety',
+
+            'door': 'Doors',
+
+            'window': 'Windows'
+
+        };
+
+        // Severity keyword rules (editable)
+
+        const DEFAULT_SEVERITY_RULES = {
+
+            'aog': 'RED',
+
+            'atb': 'RED',
+
+            'dly': 'AMBER',
+
+            'delay': 'AMBER'
+
+        };
+
+        let keywordSeverityMap = { ...DEFAULT_SEVERITY_RULES };
+
+        const SEV_ORDER = { 'RED': 3, 'AMBER': 2, 'YELLOW': 1, 'GREEN': 0 };
+
+        const SEV_LEVELS = ['RED', 'AMBER', 'YELLOW', 'GREEN'];
+
+        function loadSeverityRules() {
+
+            try {
+
+                const raw = localStorage.getItem('hrpSeverityRules');
+
+                if (raw) {
+
+                    const parsed = JSON.parse(raw);
+
+                    if (parsed && typeof parsed === 'object') keywordSeverityMap = parsed;
+
+                }
+
+            } catch { }
+
+        }
+
+        function persistSeverityRules() {
+            try { localStorage.setItem('hrpSeverityRules', JSON.stringify(keywordSeverityMap)); } catch { }
+            saveToStorage();
+            if (window.firebaseApi) {
+                window.firebaseApi.saveSeverityRules?.(keywordSeverityMap).catch?.(() => { });
+            }
+        }
+
+        function detectSeverityFromText(text) {
+
+            const t = String(text || '').toLowerCase();
+
+            let best = 'GREEN';
+
+            for (const [kw, sev] of Object.entries(keywordSeverityMap)) {
+
+                if (t.includes(kw) && SEV_ORDER[sev] > SEV_ORDER[best]) best = sev;
+
+            }
+
+            return best;
+
+        }
+
+        function getSeverityColor(sev) {
+
+            if (sev === 'RED') return '#e74c3c';
+
+            if (sev === 'AMBER') return '#ffb300';
+
+            if (sev === 'YELLOW') return '#f1c40f';
+
+            return '#27ae60'; // GREEN
+
+        }
+
+        function buildWatchList() {
+
+            const tbodyA = document.getElementById('watch-list-airbus');
+
+            const tbodyB = document.getElementById('watch-list-boeing');
+
+            const openCases = caseHistory.filter(c => c.status !== 'Closed' && c.status !== 'Revised' && c.status !== 'Closed/Revised');
+
+            const AIRBUS_TYPES_SET = new Set(['A318', 'A319', 'A320', 'A321', 'A330', 'A340', 'A350', 'A380']);
+
+            const BOEING_TYPES_SET = new Set(['B707', 'B717', 'B727', 'B737', 'B747', 'B757', 'B767', 'B777', 'B787']);
+
+            const airbusCases = openCases.filter(c => AIRBUS_TYPES_SET.has(c.acType));
+
+            const boeingCases = openCases.filter(c => BOEING_TYPES_SET.has(c.acType));
+
+            const sortBySev = arr => arr.slice().sort((a, b) => SEV_ORDER[detectSeverityFromText(b.reason)] - SEV_ORDER[detectSeverityFromText(a.reason)]);
+
+            const rowHtml = c => { const sev = detectSeverityFromText(c.reason); const color = getSeverityColor(sev); const pill = `<span class="sev-pill" style="background:${color}">${sev}</span>`; return `<tr style="border-bottom:1px solid var(--bord);"><td style="padding:6px 4px;">${c.caseId}</td><td style="padding:6px 4px;">${c.reg}</td><td style="padding:6px 4px;">${c.ata}</td><td style="padding:6px 4px;">${pill}</td><td style="padding:6px 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${(c.reason || '').replace(/</g, '&lt;')}</td></tr>`; };
+
+            const aSorted = sortBySev(airbusCases); const bSorted = sortBySev(boeingCases);
+
+            tbodyA.innerHTML = aSorted.length ? aSorted.map(rowHtml).join('') : '<tr><td colspan="5" style="padding:8px; color:var(--muted);">No open Airbus cases.</td></tr>';
+
+            tbodyB.innerHTML = bSorted.length ? bSorted.map(rowHtml).join('') : '<tr><td colspan="5" style="padding:8px; color:var(--muted);">No open Boeing cases.</td></tr>';
+
+        }
+
+        function openWatchModal() { buildWatchList(); const d = new Date(); const ds = d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }); document.getElementById('watch-date').textContent = `HRP WATCH LIST - ${ds}`; document.getElementById('watch-modal').style.display = 'flex'; }
+
+        function closeWatchModal() { document.getElementById('watch-modal').style.display = 'none'; }
+
+        function renderSeverityRulesTable() {
+
+            const tbody = document.getElementById('sev-rules-body');
+
+            const entries = Object.entries(keywordSeverityMap).sort((a, b) => { const da = SEV_ORDER[a[1]], db = SEV_ORDER[b[1]]; if (db !== da) return db - da; return a[0].localeCompare(b[0]); });
+
+            tbody.innerHTML = entries.map(([kw, sev]) => { const options = SEV_LEVELS.map(s => `<option value="${s}" ${s === sev ? 'selected' : ''}>${s}</option>`).join(''); return `<tr style="border-bottom:1px solid var(--bord);"><td style="padding:6px 4px;">${kw}</td><td style="padding:6px 4px;"><select class="sev-edit" data-kw="${kw}" style="width:120px;">${options}</select></td><td style="padding:6px 4px;"><button class="btn add sev-del" data-kw="${kw}">Delete</button></td></tr>`; }).join('') || '<tr><td colspan="3" style="padding:6px; color:var(--muted);">No rules yet. Add above.</td></tr>';
+
+        }
+
+        function openSeverityModal() { renderSeverityRulesTable(); document.getElementById('sev-modal').style.display = 'flex'; }
+
+        function closeSeverityModal() { document.getElementById('sev-modal').style.display = 'none'; }
+
+        function addSeverityRule() { const kwInput = document.getElementById('sev-new-keyword'); const sevSel = document.getElementById('sev-new-severity'); let kw = (kwInput.value || '').trim().toLowerCase(); const sev = sevSel.value; if (!kw) { alert('Enter a keyword'); return; } if (!SEV_LEVELS.includes(sev)) { alert('Select a severity'); return; } keywordSeverityMap[kw] = sev; persistSeverityRules(); renderSeverityRulesTable(); kwInput.value = ''; }
+
+        function handleSeverityTableEvents(e) { const t = e.target; if (t.classList.contains('sev-edit')) { const kw = t.getAttribute('data-kw'); const val = t.value; if (SEV_LEVELS.includes(val)) { keywordSeverityMap[kw] = val; persistSeverityRules(); buildWatchList(); } } if (t.classList.contains('sev-del')) { const kw = t.getAttribute('data-kw'); if (confirm(`Delete rule for \"${kw}\"?`)) { delete keywordSeverityMap[kw]; persistSeverityRules(); renderSeverityRulesTable(); buildWatchList(); } } }
+
+        let seqMap = {};
+
+        function populateACType() { const sel = document.getElementById('ac-type'); sel.innerHTML = AC_TYPES.map(t => `<option value="${t}">${t}</option>`).join(''); }
+
+        function populateATA() { const sel = document.getElementById('ata'); const placeholder = '<option value="" disabled selected>Select ATA</option>'; const opts = ATA_CHAPTERS.map(c => `<option value="${c}">${c}</option>`).join(''); sel.innerHTML = placeholder + opts; }
+
+        function ensureOption(selectEl, value) { if (!value) return; if (!Array.from(selectEl.options).some(o => o.value === String(value))) { const opt = document.createElement('option'); opt.value = String(value); opt.textContent = String(value); selectEl.appendChild(opt); } }
+
+        function detectHealthIndicator(text) { const t = String(text || '').toLowerCase(); for (const [kw, ind] of Object.entries(HEALTH_MAP)) { if (t.includes(kw)) return ind; } return ''; }
+
+        function updateHealthFromReason() { const reason = document.getElementById('reason').value; const ind = detectHealthIndicator(reason); const el = document.getElementById('health-indicator'); if (ind) { el.textContent = ind; el.style.display = ''; } else { el.textContent = ''; el.style.display = 'none'; } if (lastCase) updateCurrentCase({ health: ind }); }
+
+        function addStep(val = '') { const list = document.getElementById('steps-list'); const div = document.createElement('div'); div.className = 'step-row'; const ta = document.createElement('textarea'); ta.placeholder = 'Describe step'; ta.value = val; const del = document.createElement('button'); del.textContent = '✕'; del.className = 'btn add'; del.onclick = () => div.remove(); div.appendChild(ta); div.appendChild(del); list.appendChild(div); }
+
+        function getSteps() { return Array.from(document.querySelectorAll('#steps-list textarea')).map(t => t.value.trim()).filter(Boolean); }
+
+        function nextSeq(acType, ata) { const key = acType + '||' + ata; seqMap[key] = (seqMap[key] || 0) + 1; return seqMap[key]; }
+
+        function lockFields() { ['date', 'ac-type', 'ac-reg', 'ata', 'reason', 'add-step', 'save'].forEach(id => { const el = document.getElementById(id); if (el) el.disabled = true; if (el && el.classList) el.classList.add('locked'); }); document.querySelectorAll('#steps-list textarea, #steps-list .btn').forEach(el => { el.disabled = true; el.classList.add('locked'); }); }
+
+        function unlockEntryFields() { ['date', 'ac-type', 'ac-reg', 'ata', 'reason', 'add-step', 'save'].forEach(id => { const el = document.getElementById(id); if (el) el.disabled = false; if (el && el.classList) el.classList.remove('locked'); }); document.querySelectorAll('#steps-list textarea, #steps-list .btn').forEach(el => { el.disabled = false; el.classList.remove('locked'); }); document.getElementById('edit-entry').style.display = 'none'; document.getElementById('save').style.display = ''; }
+
+        function lockEntryFields() { ['date', 'ac-type', 'ac-reg', 'ata', 'reason', 'add-step', 'save'].forEach(id => { const el = document.getElementById(id); if (el) el.disabled = true; if (el && el.classList) el.classList.add('locked'); }); document.querySelectorAll('#steps-list textarea, #steps-list .btn').forEach(el => { el.disabled = true; el.classList.add('locked'); }); document.getElementById('edit-entry').style.display = ''; document.getElementById('save').style.display = 'none'; }
+
+        function addExitAction(val = '', date = '') { const wrap = document.getElementById('actions-wrap'); const div = document.createElement('div'); div.className = 'step-row'; const dt = document.createElement('input'); dt.type = 'date'; dt.value = date || new Date().toISOString().slice(0, 10); dt.style.width = '100px'; const ta = document.createElement('textarea'); ta.placeholder = 'Action done'; ta.value = val; const del = document.createElement('button'); del.textContent = '✕'; del.className = 'btn add'; del.onclick = () => div.remove(); div.appendChild(dt); div.appendChild(ta); div.appendChild(del); wrap.appendChild(div); }
+
+        function unlockExitFields() { document.getElementById('save-exit').disabled = false; document.getElementById('save-exit').classList.remove('locked'); document.querySelectorAll('#actions-wrap input, #actions-wrap textarea, #actions-wrap .btn').forEach(el => { el.disabled = false; el.classList.remove('locked'); }); document.getElementById('edit-exit').style.display = 'none'; document.getElementById('save-exit').style.display = ''; }
+
+        function lockExitFields() { document.getElementById('save-exit').disabled = true; document.getElementById('save-exit').classList.add('locked'); document.querySelectorAll('#actions-wrap input, #actions-wrap textarea, #actions-wrap .btn').forEach(el => { el.disabled = true; el.classList.add('locked'); }); document.getElementById('edit-exit').style.display = ''; document.getElementById('save-exit').style.display = 'none'; }
+
+        function onSaveExit() { const actions = Array.from(document.querySelectorAll('#actions-wrap .step-row')).map(row => ({ date: row.querySelector('input[type=date]').value, action: row.querySelector('textarea').value.trim() })).filter(a => a.action); if (actions.length === 0) { alert('Please add at least one action.'); return; } updateCurrentCase({ exitActions: actions }); lockExitFields(); /*saveCSV();*/ saveToStorage(); if (window.firebaseApi) { window.firebaseApi.saveCase?.(lastCase).catch?.(() => { }); } }
+
+        // --- FOLLOW UP LOGIC ---
+
+        function lockFollowupFields() { ['toggle-closed', 'toggle-revised', 'feedback', 'save-followup'].forEach(id => { const el = document.getElementById(id); if (!el) return; el.disabled = true; if (el.classList) el.classList.add('locked'); }); document.getElementById('edit-followup').style.display = ''; document.getElementById('save-followup').style.display = 'none'; }
+
+        function unlockFollowupFields() { ['toggle-closed', 'toggle-revised', 'feedback', 'save-followup'].forEach(id => { const el = document.getElementById(id); if (!el) return; el.disabled = false; if (el.classList) el.classList.remove('locked'); }); document.getElementById('edit-followup').style.display = 'none'; document.getElementById('save-followup').style.display = ''; }
+
+        function computeStatusFromToggles() { const closed = document.getElementById('toggle-closed').checked; const revised = document.getElementById('toggle-revised').checked; if (closed && revised) return 'Closed/Revised'; if (closed) return 'Closed'; if (revised) return 'Revised'; return 'Open'; }
+
+        function updatePill(caseId, status) { const pill = document.getElementById('caseid'); if (!caseId) { pill.style.display = 'none'; return; } pill.textContent = caseId; pill.style.background = getPillColor(status || 'Open'); pill.style.display = ''; }
+
+        function collectExitActions() { return Array.from(document.querySelectorAll('#actions-wrap .step-row')).map(row => ({ date: row.querySelector('input[type=date]').value, action: row.querySelector('textarea').value.trim() })).filter(a => a.action); }
+
+        function updateCurrentCase(changes) { if (!lastCase) return; Object.assign(lastCase, changes); const idx = caseHistory.findIndex(c => c.caseId === lastCase.caseId); if (idx > -1) caseHistory[idx] = { ...caseHistory[idx], ...changes }; updatePill(lastCase.caseId, lastCase.status || 'Open'); renderHistory(); /*saveCSV();*/ updateCaseCounter(); saveToStorage(); if (window.firebaseApi) { window.firebaseApi.saveCase?.(lastCase).catch?.(() => { }); } }
+
+        // Helper: ensure an active case exists (fallback to most recent)
+
+        function ensureActiveCase() {
+
+            if (lastCase) return lastCase;
+
+            if (caseHistory.length) {
+
+                lastCase = caseHistory[0];
+
+                return lastCase;
+
+            }
+
+            return null;
+
+        }
+
+        // Override setCaseStatus to always update the current case
+
+        function setCaseStatus(status) {
+
+            updateCurrentCase({ status });
+
+        }
+
+        let visibleHistoryIds = List;
+
+        // Override renderHistory to keep track of visible ids for click handlers
+
+        const _oldRenderHistory = renderHistory;
+
+        renderHistory = function () {
+
+            const filter = (document.getElementById('history-filter')?.value || '').toLowerCase();
+
+            const tb = document.getElementById('history-list');
+
+            let sorted = caseHistory.slice().sort((a, b) => { let va = a[sortField] || ''; let vb = b[sortField] || ''; if (sortField === 'date') { va = new Date(va); vb = new Date(vb); } if (va < vb) return sortOrder === 'asc' ? -1 : 1; if (va > vb) return sortOrder === 'asc' ? 1 : -1; return 0; });
+
+            let visible = sorted.filter(c => { const s = [c.caseId, c.reg, c.ata, c.status, c.reason, (c.steps || []).join(' '), c.health || ''].join(' ').toLowerCase(); return !filter || s.includes(filter); });
+
+            visibleHistoryIds = visible.slice(0, 20).map(c => c.caseId);
+
+            let html = visible.slice(0, 20).map((c, i) => { const pillColor = getPillColor(c.status); return `<tr><td><a href=\"#\" class=\"pill\" style=\"color:inherit;text-decoration:none;background:${pillColor};\" onclick=\"editCase(${i});return false;\">${c.caseId}</a></td><td>${c.reg}</td><td>${c.ata}</td><td>${c.status}</td></tr>`; }).join('');
+
+            tb.innerHTML = html;
+
+        }
+
+        function saveEntry() {
+
+            const date = document.getElementById('date').value;
+
+            const acType = document.getElementById('ac-type').value;
+
+            const reg = document.getElementById('ac-reg').value.trim();
+
+            const ata = document.getElementById('ata').value.trim();
+
+            const reason = document.getElementById('reason').value.trim();
+
+            const steps = getSteps();
+
+            if (!date || !acType || !reg || !ata) { alert('Please fill Date, AC Type, AC Reg, and ATA.'); return; }
+
+            const health = detectHealthIndicator(reason);
+
+            if (!lastCase) {
+
+                const caseId = `HRP/${acType}/${ata}/${String(nextSeq(acType, ata)).padStart(3, '0')}`;
+
+                const status = computeStatusFromToggles();
+
+                addToHistory(caseId, reg, ata, status, date, acType, reason, steps, [], '');
+
+                updateCurrentCase({ health });
+
+                updatePill(caseId, status);
+
+                updateCaseCounter();
+
+            } else {
+
+                updateCurrentCase({ date, acType, reg, ata, reason, steps, health });
+
+            }
+
+            lockEntryFields();
+            // Persist to JSON file in selected folder
+            saveToStorage();
+            // Persist to Firebase if available
+            if (window.firebaseApi) { window.firebaseApi.saveCase?.(lastCase).catch?.(() => { }); }
+        }
+
+        function editCase(visibleIndex) {
+
+            const id = visibleHistoryIds[visibleIndex];
+
+            const idx = caseHistory.findIndex(c => c.caseId === id);
+
+            if (idx === -1) return;
+
+            const c = caseHistory[idx];
+
+            lastCase = c;
+
+            document.getElementById('date').value = c.date || '';
+
+            document.getElementById('ac-type').value = c.acType || AC_TYPES[0];
+
+            document.getElementById('ac-reg').value = c.reg || '';
+
+            ensureOption(document.getElementById('ata'), c.ata);
+
+            document.getElementById('ata').value = c.ata || '';
+
+            document.getElementById('reason').value = c.reason || '';
+
+            const ind = c.health || detectHealthIndicator(c.reason);
+
+            const el = document.getElementById('health-indicator');
+
+            if (ind) { el.textContent = ind; el.style.display = ''; } else { el.textContent = ''; el.style.display = 'none'; }
+
+            const stepsWrap = document.getElementById('steps-list');
+
+            stepsWrap.innerHTML = '';
+
+            (c.steps || []).forEach(s => addStep(s));
+
+            if ((c.steps || []).length === 0) addStep();
+
+            const actWrap = document.getElementById('actions-wrap');
+
+            actWrap.innerHTML = '';
+
+            (c.exitActions || []).forEach(a => addExitAction(a.action, a.date));
+
+            document.getElementById('feedback').value = c.feedback || '';
+
+            document.getElementById('toggle-closed').checked = (c.status === 'Closed' || c.status === 'Closed/Revised');
+
+            document.getElementById('toggle-revised').checked = (c.status === 'Revised' || c.status === 'Closed/Revised');
+
+            updatePill(c.caseId, c.status);
+
+            // start in locked mode; use Edit buttons to unlock
+
+            lockEntryFields();
+
+            lockExitFields();
+
+            lockFollowupFields();
+
+            // show delete case button when editing an existing case
+
+            const delBtn = document.getElementById('delete-case');
+
+            if (delBtn) delBtn.style.display = '';
+
+        }
+
+        function deleteCase(visibleIndex) {
+
+            const id = visibleHistoryIds[visibleIndex];
+
+            const idx = caseHistory.findIndex(c => c.caseId === id);
+
+            if (idx === -1) return;
+
+            if (!confirm('Delete this case?')) return;
+
+            const removed = caseHistory.splice(idx, 1)[0];
+
+            if (lastCase && removed && lastCase.caseId === removed.caseId) {
+
+                lastCase = null;
+
+                newCase();
+
+            }
+
+            renderHistory();
+            /*saveCSV();*/
+            updateCaseCounter();
+            saveToStorage();
+            // Delete from Firebase
+            if (window.firebaseApi) {
+                window.firebaseApi.deleteCase(id).catch(() => { });
+            }
+        }
+
+
+
+        // Auth functions
+        function openAuthModal() {
+            document.getElementById('auth-error').textContent = '';
+            document.getElementById('auth-status').textContent = '';
+            document.getElementById('auth-modal').style.display = 'flex';
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').style.display = 'none';
+        }
+
+        window.performSignIn = async function() {
+            const email = (document.getElementById('auth-email').value || '').trim();
+            const password = document.getElementById('auth-password').value;
+            const err = document.getElementById('auth-error');
+            const status = document.getElementById('auth-status');
+            const overlayStatus = document.getElementById('auth-overlay-status');
+            
+            err.textContent = ''; err.style.display = 'none';
+            status.textContent = '';
+            if (overlayStatus) overlayStatus.textContent = '';
+            
+            console.log('performSignIn called with email:', email);
+            
+            try {
+                if (!window.authApi) {
+                    console.error('window.authApi not available!');
+                    throw new Error('Auth not ready');
+                }
+                
+                console.log('window.authApi available, attempting sign in...');
+                status.textContent = 'Signing in...';
+                if (overlayStatus) overlayStatus.textContent = 'Signing in...';
+                
+                await window.authApi.signIn(email, password);
+                
+                console.log('Sign in successful!');
+                status.textContent = 'Signed in! Loading data...';
+                if (overlayStatus) overlayStatus.textContent = 'Signed in! Loading data...';
+                
+                setTimeout(() => {
+                    closeAuthModal();
+                    status.textContent = '';
+                    if (overlayStatus) overlayStatus.textContent = '';
+                }, 1500);
+            } catch (e) {
+                console.error('Sign in error:', e);
+                status.textContent = '';
+                const errorMsg = (e && e.message) ? e.message : 'Sign in failed';
+                err.textContent = errorMsg; err.style.display = 'block';
+                if (overlayStatus) overlayStatus.textContent = errorMsg;
+            }
+        }
+
+        window.performSignUp = async function() {
+            const email = (document.getElementById('auth-email').value || '').trim();
+            const password = document.getElementById('auth-password').value;
+            const err = document.getElementById('auth-error');
+            const status = document.getElementById('auth-status');
+            const overlayStatus = document.getElementById('auth-overlay-status');
+            
+            err.textContent = ''; err.style.display = 'none';
+            status.textContent = '';
+            if (overlayStatus) overlayStatus.textContent = '';
+            
+            console.log('performSignUp called with email:', email);
+            
+            try {
+                if (!window.authApi) {
+                    console.error('window.authApi not available!');
+                    throw new Error('Auth not ready');
+                }
+                
+                console.log('window.authApi available, creating account...');
+                status.textContent = 'Creating account...';
+                if (overlayStatus) overlayStatus.textContent = 'Creating account...';
+                
+                await window.authApi.signUp(email, password);
+                
+                console.log('Account created successfully!');
+                status.textContent = 'Account created! Signing in...';
+                if (overlayStatus) overlayStatus.textContent = 'Account created! Signing in...';
+                
+                setTimeout(() => {
+                    closeAuthModal();
+                    status.textContent = '';
+                    if (overlayStatus) overlayStatus.textContent = '';
+                }, 1500);
+            } catch (e) {
+                console.error('Sign up error:', e);
+                status.textContent = '';
+                const errorMsg = (e && e.message) ? e.message : 'Sign up failed';
+                err.textContent = errorMsg; err.style.display = 'block';
+                if (overlayStatus) overlayStatus.textContent = errorMsg;
+            }
+        }
+
+        async function performSignOut() {
+            try {
+                await window.authApi?.signOut();
+            } catch { }
+        }
+
+        function updateAuthUI() {
+            const btn = document.getElementById('auth-btn');
+            const overlay = document.getElementById('auth-required-overlay');
+            const u = window.currentUser;
+            
+            console.log('updateAuthUI called, user:', u);
+            
+            if (u) {
+                // User is signed in
+                console.log('User signed in:', u.email);
+                btn.textContent = u.email || 'Sign Out';
+                btn.title = 'Click to sign out';
+                btn.onclick = () => {
+                    if(confirm('Sign out?')) {
+                        performSignOut();
+                    }
+                };
+                // Hide overlay
+                if (overlay) overlay.style.display = 'none';
+            } else {
+                // User is NOT signed in
+                console.log('User NOT signed in');
+                btn.textContent = 'Sign In';
+                btn.title = 'Click to sign in';
+                btn.onclick = () => openAuthModal();
+                // Show overlay
+                if (overlay) overlay.style.display = 'flex';
+            }
+        }
+
+        function newCase() {
+
+            lastCase = null;
+
+            document.getElementById('date').value = new Date().toISOString().slice(0, 10);
+
+            const defaultType = AC_TYPES[0];
+
+            document.getElementById('ac-type').value = defaultType;
+
+            document.getElementById('ac-reg').value = 'A7-';
+
+            document.getElementById('ata').value = '';
+
+            document.getElementById('reason').value = '';
+
+            document.getElementById('health-indicator').textContent = '';
+
+            document.getElementById('health-indicator').style.display = 'none';
+
+            document.getElementById('steps-list').innerHTML = '';
+
+            addStep();
+
+            document.getElementById('actions-wrap').innerHTML = '';
+
+            document.getElementById('feedback').value = '';
+
+            document.getElementById('toggle-closed').checked = false;
+
+            document.getElementById('toggle-revised').checked = false;
+
+            updatePill('', 'Open');
+
+            unlockEntryFields();
+
+            unlockExitFields();
+
+            unlockFollowupFields();
+
+            // hide delete button in new case mode
+
+            const delBtn = document.getElementById('delete-case');
+
+            if (delBtn) delBtn.style.display = 'none';
+
+        }
+
+
+
+        // Init
+
+        document.addEventListener('DOMContentLoaded', async () => {
+
+            loadSeverityRules();
+
+            await loadSaveDirHandle();
+
+            // Prefer loading from JSON file in selected folder; fallback to localStorage
+
+            await loadDataFromFile();
+
+            if (!caseHistory.length) loadFromStorage();
+
+            populateACType();
+
+            populateATA();
+
+            // Start with a fresh form
+
+            newCase();
+
+            // Refresh UI from persisted data
+
+            renderHistory();
+
+            updateCaseCounter();
+
+
+
+            document.getElementById('add-step').onclick = () => addStep();
+
+            document.getElementById('add-action').onclick = () => addExitAction();
+
+            document.getElementById('save').onclick = () => saveEntry();
+
+            document.getElementById('edit-entry').onclick = () => unlockEntryFields();
+
+            document.getElementById('save-exit').onclick = () => onSaveExit();
+
+            document.getElementById('edit-exit').onclick = () => unlockExitFields();
+
+            document.getElementById('save-followup').onclick = () => onSaveFollowup();
+
+            document.getElementById('edit-followup').onclick = () => unlockFollowupFields();
+
+            document.getElementById('new-case-btn').onclick = () => newCase();
+
+            const pill = document.getElementById('caseid'); pill.addEventListener('click', () => { if (pill.textContent) { try { navigator.clipboard && navigator.clipboard.writeText(pill.textContent); } catch (_) { } } });
+
+            const onStatusToggleChanged = () => updatePill(lastCase?.caseId || '', computeStatusFromToggles());
+
+            document.getElementById('toggle-closed').addEventListener('change', onStatusToggleChanged);
+
+            document.getElementById('toggle-revised').addEventListener('change', onStatusToggleChanged);
+
+            document.getElementById('history-filter').addEventListener('input', () => renderHistory());
+
+            document.getElementById('reason').addEventListener('input', updateHealthFromReason);
+
+
+
+
+            // Watch list actions
+
+            document.getElementById('watch-list-btn').addEventListener('click', openWatchModal);
+
+            document.getElementById('watch-close').addEventListener('click', closeWatchModal);
+
+            document.getElementById('watch-modal').addEventListener('click', (e) => { if (e.target.id === 'watch-modal') closeWatchModal(); });
+
+
+
+            // Severity rules actions
+
+            document.getElementById('severity-btn').addEventListener('click', openSeverityModal);
+
+            document.getElementById('sev-close').addEventListener('click', closeSeverityModal);
+
+            document.getElementById('sev-modal').addEventListener('click', (e) => { if (e.target.id === 'sev-modal') closeSeverityModal(); });
+
+            document.getElementById('sev-add').addEventListener('click', addSeverityRule);
+
+            document.getElementById('sev-rules-body').addEventListener('change', handleSeverityTableEvents);
+
+            document.getElementById('sev-rules-body').addEventListener('click', handleSeverityTableEvents);
+
+            // Auth modal actions
+            document.getElementById('auth-close').addEventListener('click', closeAuthModal);
+            document.getElementById('auth-modal').addEventListener('click', (e) => { if (e.target.id === 'auth-modal') closeAuthModal(); });
+            document.getElementById('auth-signin').addEventListener('click', () => { console.log('Modal Sign In clicked'); performSignIn(); });
+            console.log('Auth signin listener attached');
+            document.getElementById('auth-signup').addEventListener('click', () => { console.log('Modal Sign Up clicked'); performSignUp(); });
+            console.log('Auth signup listener attached');
+            document.getElementById('auth-required-signin').addEventListener('click', () => { console.log('Overlay Sign In clicked'); openAuthModal(); });
+            document.getElementById('auth-required-signup').addEventListener('click', () => { console.log('Overlay Sign Up clicked'); openAuthModal(); });
+
+            // Download button: only create XLSX when clicked; name: base + today's date
+            document.getElementById('download-xlsx').addEventListener('click', () => exportWorkbook({ forceDownloadXlsx: true }));
+        });
+
+    </script>
+
+    <!-- Firebase (modular v9+) via CDN in a module script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+        import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-analytics.js";
+        import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoVay3OoKHDNqoRYRLl55YKmUaiLrEjk8",
+            authDomain: "hrp-wl.firebaseapp.com",
+            projectId: "hrp-wl",
+            storageBucket: "hrp-wl.appspot.com",
+            messagingSenderId: "835582896089",
+            appId: "1:835582896089:web:a94407f71c656c1ce71bc8",
+            measurementId: "G-H1R414PREK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        isSupported().then(supported => { if (supported) { getAnalytics(app); } }).catch(() => { });
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        function toDocId(id) { try { return encodeURIComponent(String(id)); } catch { return String(id).replaceAll('/', '%2F'); } }
+        async function requireUser() { const u = auth.currentUser; if (!u) throw new Error('Not signed in'); return u.uid; }
+
+        // Granular saves
+        async function saveCase(c) {
+            try {
+                await requireUser();
+                if (!c || !c.caseId) return false;
+                const uid = auth.currentUser?.uid || '';
+                const ref = doc(db, 'cases', toDocId(c.caseId));
+                await setDoc(ref, { ...c, updatedAt: serverTimestamp(), updatedBy: uid }, { merge: true });
+                return true;
+            } catch (e) { return false; }
+        }
+
+        async function saveSeqMap(seqMap) {
+            try {
+                await requireUser();
+                await setDoc(doc(db, 'meta', 'seq'), { seqMap: seqMap || {}, updatedAt: serverTimestamp(), updatedBy: auth.currentUser?.uid || '' }, { merge: true });
+                return true;
+            } catch (e) { return false; }
+        }
+
+        async function saveSeverityRules(keywordSeverityMap) {
+            try {
+                await requireUser();
+                await setDoc(doc(db, 'meta', 'severityRules'), { keywordSeverityMap: keywordSeverityMap || {}, updatedAt: serverTimestamp(), updatedBy: auth.currentUser?.uid || '' }, { merge: true });
+                return true;
+            } catch (e) { return false; }
+        }
+
+        // Legacy bulk save
+        async function saveAll(cases, seqMapIn, keywordSeverityMapIn) {
+            try {
+                await requireUser();
+                for (const c of (cases || [])) {
+                    const ref = doc(db, 'cases', toDocId(c.caseId));
+                    await setDoc(ref, { ...c, updatedAt: serverTimestamp(), updatedBy: auth.currentUser?.uid || '' }, { merge: true });
+                }
+                await setDoc(doc(db, 'meta', 'seq'), { seqMap: seqMapIn || {}, updatedAt: serverTimestamp(), updatedBy: auth.currentUser?.uid || '' }, { merge: true });
+                await setDoc(doc(db, 'meta', 'severityRules'), { keywordSeverityMap: keywordSeverityMapIn || {}, updatedAt: serverTimestamp(), updatedBy: auth.currentUser?.uid || '' }, { merge: true });
+                return true;
+            } catch (e) { return false; }
+        }
+
+        async function loadAll() {
+            try {
+                await requireUser();
+                const snap = await getDocs(collection(db, 'cases'));
+                const cases = snap.docs.map(d => d.data());
+                const seqSnap = await getDoc(doc(db, 'meta', 'seq'));
+                const rulesSnap = await getDoc(doc(db, 'meta', 'severityRules'));
+                return {
+                    cases,
+                    seqMap: (seqSnap.exists() ? (seqSnap.data().seqMap || {}) : {}),
+                    keywordSeverityMap: (rulesSnap.exists() ? (rulesSnap.data().keywordSeverityMap || {}) : {})
+                };
+            } catch (e) { return null; }
+        }
+
+        async function deleteCaseRemote(caseId) {
+            try {
+                await requireUser();
+                await deleteDoc(doc(db, 'cases', toDocId(caseId)));
+                return true;
+            } catch (e) { return false; }
+        }
+
+        // Realtime listeners
+        let unsubCases = null, unsubSeq = null, unsubRules = null;
+        function startRealtime() {
+            if (unsubCases || unsubSeq || unsubRules) return;
+            try {
+                unsubCases = onSnapshot(collection(db, 'cases'), (snapshot) => {
+                    const arr = snapshot.docs.map(d => d.data());
+                    try { window.dispatchEvent(new CustomEvent('cloud-cases-updated', { detail: { cases: arr } })); } catch { }
+                });
+                unsubSeq = onSnapshot(doc(db, 'meta', 'seq'), (docSnap) => {
+                    const data = docSnap.exists() ? (docSnap.data() || {}) : {};
+                    try { window.dispatchEvent(new CustomEvent('cloud-meta-updated', { detail: { seqMap: data.seqMap || {} } })); } catch { }
+                });
+                unsubRules = onSnapshot(doc(db, 'meta', 'severityRules'), (docSnap) => {
+                    const data = docSnap.exists() ? (docSnap.data() || {}) : {};
+                    try { window.dispatchEvent(new CustomEvent('cloud-meta-updated', { detail: { keywordSeverityMap: data.keywordSeverityMap || {} } })); } catch { }
+                });
+            } catch { }
+        }
+        
+        function stopRealtime() {
+            try { if (unsubCases) unsubCases(); if (unsubSeq) unsubSeq(); if (unsubRules) unsubRules(); } catch { }
+            unsubCases = unsubSeq = unsubRules = null;
+        }
+
+        onAuthStateChanged(auth, user => {
+            window.currentUser = user || null;
+            try {
+                window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user: window.currentUser } }));
+            } catch { }
+            if (user) { startRealtime(); } else { stopRealtime(); }
+        });
+
+        // Export APIs
+        console.log('Exporting window.authApi and window.firebaseApi...');
+        window.authApi = {
+            signUp: (email, password) => createUserWithEmailAndPassword(auth, email, password),
+            signIn: (email, password) => signInWithEmailAndPassword(auth, email, password),
+            signOut: () => signOut(auth)
+        };
+
+        window.firebaseApi = {
+            saveAll, loadAll, deleteCase: deleteCaseRemote,
+            saveCase, saveSeqMap, saveSeverityRules,
+            startRealtime, stopRealtime
+        };
+    </script>
+
+</body>
+
+</html>
+
+
+
+
+
+
+

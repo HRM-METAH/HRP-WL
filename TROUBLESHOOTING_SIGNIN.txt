@@ -1,0 +1,217 @@
+========================================
+?? SIGN IN NOT WORKING - TROUBLESHOOTING
+========================================
+
+Your code is correct! The issue is likely in Firebase Console settings.
+
+========================================
+STEP 1: TEST FIREBASE CONNECTION
+========================================
+
+1. Open: test-firebase.html (in same folder)
+2. Open Browser Console (F12)
+3. Click "Test Sign Up" button
+4. Look at the result
+
+EXPECTED:
+? Firebase initialized
+? Auth obtained
+? Sign up successful!
+
+IF YOU SEE ERROR:
+? "auth/operation-not-allowed"
+   = Email/Password auth is DISABLED in Firebase Console
+   = FIX: Enable it (see Step 2 below)
+
+? Network error or CORS error
+   = Firebase project not accessible
+   = FIX: Check internet, Firebase API key
+
+? "auth/admin-restricted-operation"
+   = Account creation disabled
+   = FIX: Enable Email/Password provider
+
+========================================
+STEP 2: ENABLE EMAIL/PASSWORD AUTH IN FIREBASE
+========================================
+
+THIS IS THE MOST COMMON ISSUE!
+
+1. Go to: https://console.firebase.google.com/
+
+2. Select your project: "hrp-wl"
+
+3. Click "Authentication" (left menu)
+
+4. Click "Get Started" (if you see it)
+
+5. Click "Sign-in method" tab (top)
+
+6. Find "Email/Password" in the list
+
+7. Click on "Email/Password"
+
+8. Toggle "Enable" switch to ON
+
+9. Click "Save"
+
+10. Try signing up again in your app
+
+========================================
+STEP 3: CHECK FIRESTORE RULES
+========================================
+
+1. Go to: https://console.firebase.google.com/
+
+2. Select project: "hrp-wl"
+
+3. Click "Firestore Database" (left menu)
+
+4. Click "Rules" tab
+
+5. Make sure rules allow authenticated users:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
+
+6. Click "Publish"
+
+========================================
+STEP 4: VERIFY IN YOUR APP
+========================================
+
+1. Open: index.html in browser
+
+2. Open Console (F12)
+
+3. You should see:
+   ? "Exporting window.authApi and window.firebaseApi..."
+   ? "Auth state changed, user: null"
+
+4. Click "Sign In" on the overlay
+
+5. Enter:
+   Email: test@example.com
+   Password: Password123
+
+6. Click "Sign Up"
+
+7. Console should show:
+   ? "performSignUp called with email: test@example.com"
+   ? "window.authApi available, creating account..."
+   ? "Account created! Signing in..."
+   ? "Auth state changed, user: test@example.com"
+
+8. Overlay should disappear
+
+9. Button should show: "test@example.com"
+
+========================================
+STEP 5: COMMON ERRORS & SOLUTIONS
+========================================
+
+ERROR: "auth/operation-not-allowed"
+SOLUTION: Enable Email/Password in Firebase Console (Step 2)
+
+ERROR: "auth/weak-password"
+SOLUTION: Use password with 6+ characters
+
+ERROR: "auth/invalid-email"
+SOLUTION: Use valid email format (x@y.com)
+
+ERROR: "auth/email-already-in-use"
+SOLUTION: Use "Sign In" instead, or different email
+
+ERROR: "window.authApi not available!"
+SOLUTION: 
+  - Hard refresh (Ctrl + Shift + R)
+  - Check Console for Firebase import errors
+  - Check network tab for 404 errors
+
+ERROR: Nothing happens when clicking Sign In
+SOLUTION:
+  - Open Console (F12)
+  - Look for JavaScript errors
+  - Check if buttons are clickable (not blocked by overlay)
+
+========================================
+STEP 6: VERIFY FIREBASE PROJECT
+========================================
+
+1. Check your Firebase project exists:
+   https://console.firebase.google.com/project/hrp-wl
+
+2. Check Authentication is set up:
+   https://console.firebase.google.com/project/hrp-wl/authentication/users
+
+3. Check Firestore exists:
+   https://console.firebase.google.com/project/hrp-wl/firestore
+
+4. If any don't exist, create them:
+   - Click "Authentication" ? "Get Started"
+   - Click "Firestore Database" ? "Create database"
+   - Choose "Start in test mode" for now
+
+========================================
+STEP 7: TEST WITH CURL (Alternative)
+========================================
+
+Test Firebase directly:
+
+```powershell
+$body = @{
+    email = "test@example.com"
+    password = "Password123"
+    returnSecureToken = $true
+} | ConvertTo-Json
+
+$response = Invoke-RestMethod -Uri "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAoVay3OoKHDNqoRYRLl55YKmUaiLrEjk8" -Method POST -Body $body -ContentType "application/json"
+
+$response
+```
+
+IF SUCCESS:
+- You'll see: idToken, email, refreshToken
+- Auth IS enabled and working
+
+IF ERROR:
+- "ADMIN_ONLY_OPERATION" = Auth not enabled in console
+- "INVALID_PASSWORD" = Password too short
+- Other errors = Check Firebase Console
+
+========================================
+STEP 8: LAST RESORT - ENABLE GOOGLE SIGN IN
+========================================
+
+If Email/Password doesn't work, try Google Sign In:
+
+1. Firebase Console ? Authentication ? Sign-in method
+
+2. Enable "Google" provider
+
+3. I'll add Google Sign In button to your app
+
+========================================
+?? NEXT STEPS:
+========================================
+
+1. ? Run test-firebase.html first
+2. ? Check Firebase Console authentication settings
+3. ? Enable Email/Password provider
+4. ? Try signing up in your app
+5. ? Check Console (F12) for exact error messages
+
+SEND ME:
+- Screenshot of Console errors (F12)
+- Screenshot of Firebase Authentication settings
+- What you see when you click "Sign Up"
+
+========================================
